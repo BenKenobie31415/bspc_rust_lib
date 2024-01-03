@@ -1,68 +1,44 @@
-pub mod subscription;
-pub mod socket_communication;
 pub mod bspc;
+pub mod socket_communication;
+pub mod subscription;
+pub mod util;
+
+// TODO make commands structs (maybe not sure just an idea)
 
 #[cfg(test)]
 mod tests {
-    use crate::{bspc::{node::command::NodeCommand, node::{command::assemble_node_command as assemble_node_command, states::NodeState, selection::{NodeModifiers, NodeDescriptor, NodeSelector, assemble_selector}}, query::{QueryCommand, assemble_query_command as assemble_query}, desktop::{command::{DesktopCommand, self, assemble_desktop_command as assemble_desktop_command}, selection::{DesktopModifier, DesktopSelector, DesktopDescriptor}}}, socket_communication::{send_message, get_bspc_socket_path}, subscription::subscribe};
+    use crate::{
+        bspc::{
+            node::{selection::{NodeModifier, NodeSelector}, command::NodeCommand, states::NodeState},
+            query::QueryCommand,
+        },
+        socket_communication::{get_bspc_socket_path, send_message}, util::get_class_name_from_id,
+    };
 
     #[test]
     fn test() {
-        let reference: NodeSelector = NodeSelector {
-            reference_selector: None,
-            descriptor: Some(NodeDescriptor::Biggest),
-            modifiers: vec![]
-        };
-        let command: NodeCommand = NodeCommand::Focus(NodeSelector {
-            reference_selector: Some(assemble_selector(reference)),
-            descriptor: Some(NodeDescriptor::Older),
-            modifiers: vec![NodeModifiers::NotFocused]
-        });
-        let command: Vec<String> = assemble_node_command(command);
-
+        let command: QueryCommand = QueryCommand::Nodes(
+            Some(NodeSelector {
+                reference_selector: None,
+                descriptor: None,
+                modifiers: vec![NodeModifier::Focused]}), None, None);
+        let command = command.assemble();
         let result = send_message(get_bspc_socket_path(), command);
+        let node: String;
         match result {
-            Some(lines) => {
-                for line in lines {
-                    println!("response: {:?}", line);
-                }
-            }
+            Some(output) => {
+                node = output[0].clone();
+            },
             None => {
-                println!("No response");
+                node = "".to_string();
             }
         }
+        let node_name = get_class_name_from_id(&node);
+        println!("node: {:?}", node_name);
     }
 
-    #[test]
     fn test2() {
-        let command: DesktopCommand = DesktopCommand::Focus(DesktopSelector {
-            reference_selector: None,
-            descriptor: Some(DesktopDescriptor::Last),
-            modifiers: vec![]
-        });
-        let command: Vec<String> = assemble_desktop_command(command);
-
-        let result = send_message(get_bspc_socket_path(), command);
-        match result {
-            Some(lines) => {
-                for line in lines {
-                    println!("response: {:?}", line);
-                }
-            }
-            None => {
-                println!("No response");
-            }
-        }
-    }
-
-    #[test]
-    fn test3() {
-        subscribe("node_add".to_string(), callback, Vec::new())
-    }
-
-    fn callback(_args: Vec<&str>, _callback_args: Vec<&str>) {
         let command: NodeCommand = NodeCommand::State(NodeState::Fullscreen);
-        let command = assemble_node_command(command);
-        send_message(get_bspc_socket_path(), command);
+        let result = command.get_response();
     }
 }
