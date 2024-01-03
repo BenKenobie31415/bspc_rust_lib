@@ -4,23 +4,6 @@ pub struct MonitorSelector {
     pub modifiers: Vec<MonitorModifier>
 }
 
-pub(crate) fn assemble_selector(selector: MonitorSelector) -> String {
-    let mut result: String = match selector.reference_selector {
-        Some(reference_selector) => format!("{}#", reference_selector),
-        None => String::new()
-    };
-    match selector.descriptor {
-        Some(descriptor) => {
-            result.push_str(&get_descriptor_string(descriptor));
-        },
-        None => {}
-    }
-    for modifier in selector.modifiers {
-        result.push_str(&get_modifier_string(modifier));
-    }
-    result
-}
-
 pub enum MonitorDescriptor {
     // TODO path
     // TODO cycle_dir
@@ -44,27 +27,50 @@ pub enum MonitorModifier {
     NotOccupied
 }
 
-pub fn get_descriptor_string(descriptor: MonitorDescriptor) -> String {
-    match descriptor {
-        MonitorDescriptor::Any => String::from("any"),
-        MonitorDescriptor::Last => String::from("last"),
-        MonitorDescriptor::Newest => String::from("newest"),
-        MonitorDescriptor::Older => String::from("older"),
-        MonitorDescriptor::Newer => String::from("newer"),
-        MonitorDescriptor::Focused => String::from("focused"),
-        MonitorDescriptor::Pointed => String::from("pointed"),
-        MonitorDescriptor::Primary => String::from("primary"),
-        MonitorDescriptor::Nth(n) => format!("^{}", n),
-        MonitorDescriptor::Id(id) => format!("{}", id),
-        MonitorDescriptor::Name(name) => format!("{}", name)
+impl MonitorSelector {
+    pub(crate) fn assemble(&self) -> String {
+        let mut result: String = match &self.reference_selector {
+            Some(reference_selector) => format!("{}#", reference_selector),
+            None => String::new()
+        };
+        match &self.descriptor {
+            Some(descriptor) => {
+                result.push_str(&descriptor.get_string());
+            },
+            None => {}
+        }
+        for modifier in &self.modifiers {
+            result.push_str(&modifier.get_string());
+        }
+        result
     }
 }
 
-pub fn get_modifier_string(modifier: MonitorModifier) -> String {
-    match modifier {
-        MonitorModifier::Focused => String::from(".focused"),
-        MonitorModifier::NotFocused => String::from(".!focused"),
-        MonitorModifier::Occupied => String::from(".occupied"),
-        MonitorModifier::NotOccupied => String::from(".!occupied"),
+impl MonitorDescriptor {
+    pub fn get_string(&self) -> String {
+        match self {
+            MonitorDescriptor::Any => String::from("any"),
+            MonitorDescriptor::Last => String::from("last"),
+            MonitorDescriptor::Newest => String::from("newest"),
+            MonitorDescriptor::Older => String::from("older"),
+            MonitorDescriptor::Newer => String::from("newer"),
+            MonitorDescriptor::Focused => String::from("focused"),
+            MonitorDescriptor::Pointed => String::from("pointed"),
+            MonitorDescriptor::Primary => String::from("primary"),
+            MonitorDescriptor::Nth(n) => format!("^{}", n),
+            MonitorDescriptor::Id(id) => format!("{}", id),
+            MonitorDescriptor::Name(name) => format!("{}", name)
+        }
+    }
+}
+
+impl MonitorModifier {
+    pub fn get_string(&self) -> String {
+        match self {
+            MonitorModifier::Focused => String::from(".focused"),
+            MonitorModifier::NotFocused => String::from(".!focused"),
+            MonitorModifier::Occupied => String::from(".occupied"),
+            MonitorModifier::NotOccupied => String::from(".!occupied"),
+        }
     }
 }

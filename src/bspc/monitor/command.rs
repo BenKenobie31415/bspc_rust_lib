@@ -1,4 +1,4 @@
-use crate::bspc::monitor::selection as MonitorSelection;
+use crate::{bspc::monitor::selection as MonitorSelection, socket_communication::{send_message, get_bspc_socket_path}};
 
 pub enum MonitorCommand {
     Focus(MonitorSelection::MonitorSelector),
@@ -10,37 +10,43 @@ pub enum MonitorCommand {
     Remove
 }
 
-pub fn assemble_monitor_command(command: MonitorCommand) -> Vec<String> {
-    let mut result: Vec<String> = Vec::new();
-    result.push(String::from("monitor"));
-    match command {
-        MonitorCommand::Focus(selector) => {
-            result.push(String::from("--focus"));
-            result.push(MonitorSelection::assemble_selector(selector));
+impl MonitorCommand {
+    pub fn assemble(&self) -> Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        result.push(String::from("monitor"));
+        match self {
+            MonitorCommand::Focus(selector) => {
+                result.push(String::from("--focus"));
+                result.push(selector.assemble());
+            }
+            MonitorCommand::Swap(selector) => {
+                result.push(String::from("--swap"));
+                result.push(selector.assemble());
+            }
+            MonitorCommand::AddDesktops(desktops) => {
+                result.push(String::from("--add-desktops"));
+                result.push(desktops.join(" "));
+            }
+            MonitorCommand::ReorderDesktops(desktops) => {
+                result.push(String::from("--reorder-desktops"));
+                result.push(desktops.join(" "));
+            }
+            MonitorCommand::Rectangle(width, height, x, y) => {
+                result.push(String::from("--rectangle"));
+                result.push(format!("{}x{}+{}+{}", width, height, x, y));
+            }
+            MonitorCommand::Rename(name) => {
+                result.push(String::from("--rename"));
+                result.push(name.to_string());
+            }
+            MonitorCommand::Remove => {
+                result.push(String::from("--remove"));
+            }
         }
-        MonitorCommand::Swap(selector) => {
-            result.push(String::from("--swap"));
-            result.push(MonitorSelection::assemble_selector(selector));
-        }
-        MonitorCommand::AddDesktops(desktops) => {
-            result.push(String::from("--add-desktops"));
-            result.push(desktops.join(" "));
-        }
-        MonitorCommand::ReorderDesktops(desktops) => {
-            result.push(String::from("--reorder-desktops"));
-            result.push(desktops.join(" "));
-        }
-        MonitorCommand::Rectangle(width, height, x, y) => {
-            result.push(String::from("--rectangle"));
-            result.push(format!("{}x{}+{}+{}", width, height, x, y));
-        }
-        MonitorCommand::Rename(name) => {
-            result.push(String::from("--rename"));
-            result.push(name);
-        }
-        MonitorCommand::Remove => {
-            result.push(String::from("--remove"));
-        }
+        result
     }
-    result
+
+    pub fn get_response(&self) -> Option<Vec<String>> {
+        send_message(get_bspc_socket_path(), self.assemble())
+    }
 }

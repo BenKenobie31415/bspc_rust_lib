@@ -1,3 +1,5 @@
+use crate::socket_communication::{send_message, get_bspc_socket_path};
+
 use super::node::selection as NodeSelection;
 use super::desktop::selection as DesktopSelection;
 use super::monitor::selection as MonitorSelection;
@@ -6,43 +8,92 @@ use DesktopSelection::DesktopSelector;
 use MonitorSelection::MonitorSelector;
 
 pub enum QueryCommand {
-    Nodes(NodeSelector),
-    Desktops(DesktopSelector),
-    Monitors(MonitorSelector),
-    Tree
+    Nodes(Option<NodeSelector>, Option<DesktopSelector>, Option<MonitorSelector>),
+    Desktops(Option<NodeSelector>, Option<DesktopSelector>, Option<MonitorSelector>, bool),
+    Monitors(Option<NodeSelector>, Option<DesktopSelector>, Option<MonitorSelector>, bool),
+    Tree(Option<NodeSelector>, Option<DesktopSelector>, Option<MonitorSelector>),
 }
 
-pub fn assemble_query_command(command: QueryCommand) -> Vec<String> {
-    let mut result: Vec<String> = Vec::new();
-    result.push(String::from("query"));
-    match command {
-        QueryCommand::Nodes(selector) => {
-            result.push(String::from("--nodes"));
-            let asm_selector = NodeSelection::assemble_selector(selector);
-            if !asm_selector.is_empty() {
-                result.push(String::from("-n"));
-                result.push(asm_selector);
+impl QueryCommand {
+    pub fn assemble(&self) -> Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        result.push(String::from("query"));
+        match self {
+            QueryCommand::Nodes(node_sel, desktop_sel, monitor_sel) => {
+                result.push(String::from("--nodes"));
+                push_node_selector(&mut result, node_sel);
+                push_desktop_selector(&mut result, desktop_sel);
+                push_monitor_selector(&mut result, monitor_sel);
+            }
+            QueryCommand::Desktops(node_sel, desktop_sel, monitor_sel, names) => {
+                result.push(String::from("--desktops"));
+                push_node_selector(&mut result, node_sel);
+                push_desktop_selector(&mut result, desktop_sel);
+                push_monitor_selector(&mut result, monitor_sel);
+                if *names {
+                    result.push(String::from("--names"));
+                }
+            }
+            QueryCommand::Monitors(node_sel, desktop_sel, monitor_sel, names) => {
+                result.push(String::from("--monitors"));
+                push_node_selector(&mut result, node_sel);
+                push_desktop_selector(&mut result, desktop_sel);
+                push_monitor_selector(&mut result, monitor_sel);
+                if *names {
+                    result.push(String::from("--names"));
+                }
+            }
+            QueryCommand::Tree(node_sel, desktop_sel, monitor_sel) => {
+                result.push(String::from("--tree"));
+                push_node_selector(&mut result, node_sel);
+                push_desktop_selector(&mut result, desktop_sel);
+                push_monitor_selector(&mut result, monitor_sel);
             }
         }
-        QueryCommand::Desktops(selector) => {
-            result.push(String::from("--desktops"));
-            let asm_selector = DesktopSelection::assemble_selector(selector);
-            if !asm_selector.is_empty() {
-                result.push(String::from("-d"));
-                result.push(asm_selector);
-            }
-        }
-        QueryCommand::Monitors(selector) => {
-            result.push(String::from("--monitors"));
-            let asm_selector = MonitorSelection::assemble_selector(selector);
-            if !asm_selector.is_empty() {
-                result.push(String::from("-m"));
-                result.push(asm_selector);
-            }
-        }
-        QueryCommand::Tree => {
-            result.push(String::from("--tree"));
-        }
+        // println!("query command: {:?}", result);
+        result
     }
-    result
+
+    pub fn get_response(&self) -> Option<Vec<String>> {
+        send_message(get_bspc_socket_path(), self.assemble())
+    }
+}
+
+fn push_node_selector(curr_selector: &mut Vec<String>, node_sel: &Option<NodeSelector>) {
+    match node_sel {
+        Some(sel) => {
+            let assembled_selector = sel.assemble();
+            if !assembled_selector.is_empty() {
+                curr_selector.push("-n".to_string());
+                curr_selector.push(assembled_selector);
+            }
+        }
+        None => {}
+    }
+}
+
+fn push_desktop_selector(curr_selector: &mut Vec<String>, desktop_sel: &Option<DesktopSelector>) {
+    match desktop_sel {
+        Some(sel) => {
+            let assembled_selector = sel.assemble();
+            if !assembled_selector.is_empty() {
+                curr_selector.push("-d".to_string());
+                curr_selector.push(assembled_selector);
+            }
+        }
+        None => {}
+    }
+}
+
+fn push_monitor_selector(curr_selector: &mut Vec<String>, monitor_sel: &Option<MonitorSelector>) {
+    match monitor_sel {
+        Some(sel) => {
+            let assembled_selector = sel.assemble();
+            if !assembled_selector.is_empty() {
+                curr_selector.push("-m".to_string());
+                curr_selector.push(assembled_selector);
+            }
+        }
+        None => {}
+    }
 }

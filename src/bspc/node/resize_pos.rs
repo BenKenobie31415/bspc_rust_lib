@@ -9,7 +9,7 @@ pub enum ResizePos {
     BottomLeft
 }
 
-pub fn get_string(resize_pos: ResizePos) -> String {
+pub fn get_string(resize_pos: &ResizePos) -> String {
     match resize_pos {
         ResizePos::Top => "top".to_string(),
         ResizePos::Left => "left".to_string(),

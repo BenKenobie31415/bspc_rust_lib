@@ -11,7 +11,7 @@ pub enum NodeFlag {
     NotMarked
 }
 
-pub fn get_string(flag: NodeFlag) -> String {
+pub fn get_string(flag: &NodeFlag) -> String {
     match flag {
         NodeFlag::Hidden => String::from("hidden=on"),
         NodeFlag::NotHidden => String::from("hidden=off"),
