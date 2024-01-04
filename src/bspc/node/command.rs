@@ -37,7 +37,11 @@ pub enum NodeCommand {
 }
 
 impl NodeCommand {
-    pub fn assemble(&self) -> Vec<String> {
+    pub fn get_response(&self) -> Option<Vec<String>> {
+        send_message(get_bspc_socket_path(), self.assemble())
+    }
+
+    fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("node"));
         match self {
@@ -118,9 +122,5 @@ impl NodeCommand {
             }
         }
         result
-    }
-
-    pub fn get_response(&self) -> Option<Vec<String>> {
-        send_message(get_bspc_socket_path(), self.assemble())
     }
 }

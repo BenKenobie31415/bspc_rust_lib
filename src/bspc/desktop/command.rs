@@ -17,7 +17,11 @@ pub enum DesktopCommand {
 }
 
 impl DesktopCommand {
-    pub fn assemble(&self) -> Vec<String> {
+    pub fn get_response(&self) -> Option<Vec<String>> {
+        send_message(get_bspc_socket_path(), self.assemble())
+    }
+
+    fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("desktop"));
         match self {
@@ -52,9 +56,5 @@ impl DesktopCommand {
             }
         }
         result
-    }
-
-    pub fn get_response(&self) -> Option<Vec<String>> {
-        send_message(get_bspc_socket_path(), self.assemble())
     }
 }
