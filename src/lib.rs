@@ -7,12 +7,14 @@ pub mod util;
 
 #[cfg(test)]
 mod tests {
+    use std::thread::JoinHandle;
+
     use crate::{
         bspc::{
-            node::{selection::{NodeModifier, NodeSelector}, command::NodeCommand, states::NodeState},
-            query::QueryCommand,
+            node::selection::{NodeModifier, NodeSelector},
+            query::QueryCommand, events::Event,
         },
-        socket_communication::{get_bspc_socket_path, send_message}, util::get_class_name_from_id,
+        socket_communication::{get_bspc_socket_path, send_message}, util::get_class_name_from_id, subscription::SubscriptionHandler,
     };
 
     #[test]
@@ -37,8 +39,20 @@ mod tests {
         println!("node: {:?}", node_name);
     }
 
+    #[test]
     fn test2() {
-        let command: NodeCommand = NodeCommand::State(NodeState::Fullscreen);
-        let result = command.get_response();
+        let mut sub_handler = SubscriptionHandler::new();
+
+        sub_handler.subscribe(Event::NodeAdd, callback, "node add");
+        sub_handler.subscribe(Event::NodeRemove, callback, "node remove");
+        sub_handler.subscribe(Event::NodeFocus, callback, "node focus");
+        sub_handler.subscribe(Event::DesktopFocus, callback, "desktop focus");
+
+        sub_handler.await_threads();
+    }
+
+    fn callback(args: Vec<&str>, callback_args: &str) {
+        println!("callback: {:?}", args);
+        println!("callback_args: {:?}", callback_args);
     }
 }
