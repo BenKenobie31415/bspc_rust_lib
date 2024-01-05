@@ -12,9 +12,9 @@ mod tests {
     use crate::{
         bspc::{
             node::selection::{NodeModifier, NodeSelector},
-            query::QueryCommand, events::Event,
+            query::QueryCommand, events::Event, desktop::{selection::{DesktopSelector, DesktopModifier, DesktopDescriptor}, self},
         },
-        socket_communication::{get_bspc_socket_path, send_message}, util::get_class_name_from_id, subscription::SubscriptionHandler,
+        socket_communication::{get_bspc_socket_path, send_message}, util::{get_class_name_from_id, get_focused_node, get_last_focused_on_desktop}, subscription::SubscriptionHandler,
     };
 
     #[test]
@@ -54,5 +54,25 @@ mod tests {
     fn callback(args: Vec<&str>, callback_args: &str) {
         println!("callback: {:?}", args);
         println!("callback_args: {:?}", callback_args);
+    }
+
+    #[test]
+    fn test3() {
+        match get_focused_node() {
+            Some(id) => println!("id of focused node: {}", get_class_name_from_id(&id)),
+            None => println!("no node focused")
+        }
+    }
+
+    #[test]
+    fn test4() {
+        let desktop_id = QueryCommand::Desktops(
+            None,
+            Some(DesktopSelector::new().set_descriptor(DesktopDescriptor::Name("1".to_string()))), 
+            None,
+            false).get_response().expect("error");
+        let desktop_id = desktop_id.get(0).expect("error");
+        let last_selected = get_last_focused_on_desktop(&desktop_id).expect("idk");
+        println!("last selected: {}", get_class_name_from_id(&last_selected));
     }
 }
