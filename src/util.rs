@@ -2,7 +2,7 @@ use serde_json::Value;
 
 use crate::bspc::{
     node::selection::{NodeDescriptor, NodeModifier, NodeSelector},
-    query::QueryCommand, desktop::selection::{DesktopSelector, DesktopDescriptor},
+    query::QueryCommand, desktop::selection::{DesktopSelector, DesktopDescriptor, DesktopModifier},
 };
 
 pub fn get_class_name_from_id(node_id: &str) -> String {
@@ -51,8 +51,8 @@ pub fn get_all_desktops() -> Option<Vec<String>> {
             }
             return None;
         }
-        None => None,
-    }
+        None => return None,
+    };
 }
 
 pub fn get_focused_node() -> Option<String> {
@@ -67,6 +67,14 @@ pub fn get_focused_node() -> Option<String> {
             }
             return None;
         }
-        None => None,
+        None => return None,
+    };
+}
+
+pub fn get_node_classes_from_id_list(nodes: &Vec<String>) -> Vec<String> {
+    let mut result = Vec::new();
+    for id in nodes {
+        result.push(get_class_name_from_id(id));
     }
+    result
 }

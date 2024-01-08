@@ -15,7 +15,7 @@ pub enum QueryCommand {
 }
 
 impl QueryCommand {
-    pub fn assemble(&self) -> Vec<String> {
+    pub(crate) fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("query"));
         match self {
@@ -55,7 +55,15 @@ impl QueryCommand {
     }
 
     pub fn get_response(&self) -> Option<Vec<String>> {
-        send_message(get_bspc_socket_path(), self.assemble())
+        match send_message(get_bspc_socket_path(), self.assemble()) {
+            Some(message) => {
+                if message.len() > 0 {
+                    return Some(message);
+                }
+                return None;
+            },
+            None => None
+        }
     }
 }
 

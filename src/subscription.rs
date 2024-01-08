@@ -17,7 +17,7 @@ impl SubscriptionHandler {
         }
     }
 
-    pub fn subscribe<T: Copy + Send + 'static>(&mut self, event: Event, callback: fn(Vec<&str>, T), callback_args: T) {
+    pub fn subscribe<T:Send + 'static>(&mut self, event: Event, callback: fn(Vec<&str>, &T), callback_args: T) {
         self.threads_handles.push(subscribe::<T>(event, callback, callback_args));
     }
 
@@ -28,14 +28,14 @@ impl SubscriptionHandler {
     }
 }
 
-fn subscribe<T: Copy + Send + 'static>(event: Event, callback: fn(Vec<&str>, T), callback_args: T) -> JoinHandle<()> {
+fn subscribe<T:Send + 'static>(event: Event, callback: fn(Vec<&str>, &T), callback_args: T) -> JoinHandle<()> {
     let handle = thread::spawn(move || {
         add_subscriber::<T>(event, callback, callback_args);
     });
     handle
 }
 
-fn add_subscriber<T: Copy>(event: Event, callback: fn(Vec<&str>, T), callback_args: T) {
+fn add_subscriber<T>(event: Event, callback: fn(Vec<&str>, &T), callback_args: T) {
     let socket_path = match env::var("BSPWM_SOCKET") {
         Ok(val) => val,
         Err(_e) => String::from("/tmp/bspwm_0_0-socket"),
@@ -55,7 +55,7 @@ fn add_subscriber<T: Copy>(event: Event, callback: fn(Vec<&str>, T), callback_ar
         if bytes_read > 0 {
             let data = String::from_utf8_lossy(&buffer[..bytes_read]);
             let args: Vec<&str> = data.trim_end_matches('\n').split(' ').skip(1).collect();
-            callback(args, callback_args);
+            callback(args, &callback_args);
         }
     }
 }

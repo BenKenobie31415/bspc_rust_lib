@@ -7,7 +7,7 @@ pub mod util;
 
 #[cfg(test)]
 mod tests {
-    use std::thread::JoinHandle;
+    use std::{thread::JoinHandle, collections::HashMap};
 
     use crate::{
         bspc::{
@@ -43,15 +43,15 @@ mod tests {
     fn test2() {
         let mut sub_handler = SubscriptionHandler::new();
 
-        sub_handler.subscribe(Event::NodeAdd, callback, "node add");
-        sub_handler.subscribe(Event::NodeRemove, callback, "node remove");
-        sub_handler.subscribe(Event::NodeFocus, callback, "node focus");
-        sub_handler.subscribe(Event::DesktopFocus, callback, "desktop focus");
+        sub_handler.subscribe(Event::NodeAdd, callback, "node add".to_string());
+        sub_handler.subscribe(Event::NodeRemove, callback, "node remove".to_string());
+        sub_handler.subscribe(Event::NodeFocus, callback, "node focus".to_string());
+        sub_handler.subscribe(Event::DesktopFocus, callback, "desktop focus".to_string());
 
         sub_handler.await_threads();
     }
 
-    fn callback(args: Vec<&str>, callback_args: &str) {
+    fn callback(args: Vec<&str>, callback_args: &String) {
         println!("callback: {:?}", args);
         println!("callback_args: {:?}", callback_args);
     }
@@ -75,4 +75,18 @@ mod tests {
         let last_selected = get_last_focused_on_desktop(&desktop_id).expect("idk");
         println!("last selected: {}", get_class_name_from_id(&last_selected));
     }
+
+    // #[test]
+    // fn test5() {
+    //     let mut sub_handler = SubscriptionHandler::new();
+    //     let mut map = HashMap::new();
+    //     map.insert("key".to_string(), "value".to_string());
+
+    //     sub_handler.subscribe::<HashMap<String, String>>(Event::NodeAdd, add_args_to_map, map);
+    // }
+
+    // fn add_args_to_map(args: Vec<&str>, map: &mut HashMap<String, String>) {
+    //     map.insert("new key".to_string(), "new value".to_string());
+    //     println!("args: {:?}", map);
+    // }
 }
