@@ -1,14 +1,13 @@
-use super::{modifier::MonitorModifier, descriptor::MonitorDescriptor};
-
-pub struct MonitorSelector {
+use super::{modifier::NodeModifier, descriptor::NodeDescriptor};
+pub struct NodeSelector {
     pub reference_selector: Option<String>,
-    pub descriptor: Option<MonitorDescriptor>,
-    pub modifiers: Vec<MonitorModifier>
+    pub descriptor: Option<NodeDescriptor>,
+    pub modifiers: Vec<NodeModifier>
 }
 
-impl MonitorSelector {
-    pub fn new() -> MonitorSelector {
-        MonitorSelector {
+impl NodeSelector {
+    pub fn new() -> NodeSelector {
+        NodeSelector {
             reference_selector: None,
             descriptor: None,
             modifiers: Vec::new()
@@ -19,11 +18,11 @@ impl MonitorSelector {
         self.reference_selector = Some(reference_selector);
         self
     }
-    pub fn set_descriptor(mut self, descriptor: MonitorDescriptor) -> Self {
+    pub fn set_descriptor(mut self, descriptor: NodeDescriptor) -> Self {
         self.descriptor = Some(descriptor);
         self
     }
-    pub fn add_modifier(mut self, modifier: MonitorModifier) -> Self {
+    pub fn add_modifier(mut self, modifier: NodeModifier) -> Self {
         self.modifiers.push(modifier);
         self
     }

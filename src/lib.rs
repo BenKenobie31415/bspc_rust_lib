@@ -11,8 +11,8 @@ mod tests {
 
     use crate::{
         bspc::{
-            node::selection::{NodeModifier, NodeSelector},
-            query::QueryCommand, events::Event, desktop::{selection::{DesktopSelector, DesktopModifier, DesktopDescriptor}, self},
+            node::{command::NodeCommand, descriptor::NodeDescriptor, directions::Direction, modifier::NodeModifier, path::{Path, Jump}, selector::NodeSelector},
+            query::QueryCommand, events::Event, desktop::{selection::DesktopSelector, descriptor::DesktopDescriptor},
         },
         socket_communication::{get_bspc_socket_path, send_message}, util::{get_class_name_from_id, get_focused_node, get_last_focused_on_desktop}, subscription::SubscriptionHandler,
     };
@@ -76,17 +76,18 @@ mod tests {
         println!("last selected: {}", get_class_name_from_id(&last_selected));
     }
 
-    // #[test]
-    // fn test5() {
-    //     let mut sub_handler = SubscriptionHandler::new();
-    //     let mut map = HashMap::new();
-    //     map.insert("key".to_string(), "value".to_string());
+    #[test]
+    fn test5() {
+        let output = QueryCommand::Nodes(
+            Some(NodeSelector::new().set_descriptor(NodeDescriptor::Path(Path::new().add_jump(Jump::Brother)))),
+            None,
+            None).get_response().expect("error");
 
-    //     sub_handler.subscribe::<HashMap<String, String>>(Event::NodeAdd, add_args_to_map, map);
-    // }
+        println!("output: {:?}", output);
+    }
 
-    // fn add_args_to_map(args: Vec<&str>, map: &mut HashMap<String, String>) {
-    //     map.insert("new key".to_string(), "new value".to_string());
-    //     println!("args: {:?}", map);
-    // }
+    #[test]
+    fn test6() {
+        NodeCommand::PreselectDirection(Direction::North).get_response();
+    }
 }

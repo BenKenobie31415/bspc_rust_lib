@@ -1,4 +1,4 @@
-use crate::bspc::node::states as NodeState;
+use crate::bspc::node::state as NodeState;
 use crate::bspc::node::flags as NodeFlag;
 use crate::bspc::node::layers as NodeLayer;
 use crate::bspc::node::resize_pos as ResizePos;
@@ -11,7 +11,8 @@ use crate::socket_communication::send_message;
 use DesktopSelection::DesktopSelector;
 use MonitorSelection::MonitorSelector;
 
-use super::selection::NodeSelector;
+use super::directions::Direction;
+use super::selector::NodeSelector;
 
 pub enum NodeCommand {
     Focus(NodeSelector),
@@ -20,6 +21,7 @@ pub enum NodeCommand {
     ToMonitor(MonitorSelector, bool),
     ToNode(NodeSelector, bool),
     Swap(NodeSelector),
+    PreselectDirection(Direction),
     Move(i32, i32),
     Resize(ResizePos::ResizePos, i32, i32),
     Ratio(f64),
@@ -38,6 +40,7 @@ pub enum NodeCommand {
 
 impl NodeCommand {
     pub fn get_response(&self) -> Option<Vec<String>> {
+        println!("sending message: {:?}", self.assemble());
         send_message(get_bspc_socket_path(), self.assemble())
     }
 
@@ -77,6 +80,10 @@ impl NodeCommand {
             NodeCommand::Swap(node_sel) => {
                 result.push(String::from("--swap"));
                 result.push(node_sel.assemble());
+            }
+            NodeCommand::PreselectDirection(direction) => {
+                result.push(String::from("--presel-dir"));
+                result.push(direction.get_string());
             }
             NodeCommand::Move(x, y) => {
                 result.push(String::from("--move"));

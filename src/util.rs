@@ -1,8 +1,8 @@
 use serde_json::Value;
 
 use crate::bspc::{
-    node::selection::{NodeDescriptor, NodeModifier, NodeSelector},
-    query::QueryCommand, desktop::selection::{DesktopSelector, DesktopDescriptor, DesktopModifier},
+    node::{selector::NodeSelector, descriptor::NodeDescriptor, modifier::NodeModifier},
+    query::QueryCommand, desktop::{selection::DesktopSelector, descriptor::DesktopDescriptor},
 };
 
 pub fn get_class_name_from_id(node_id: &str) -> String {

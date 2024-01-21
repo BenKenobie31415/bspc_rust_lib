@@ -12,16 +12,16 @@ pub enum NodeFlag {
 }
 
 pub fn get_string(flag: &NodeFlag) -> String {
-    match flag {
-        NodeFlag::Hidden => String::from("hidden=on"),
-        NodeFlag::NotHidden => String::from("hidden=off"),
-        NodeFlag::Sticky => String::from("sticky=on"),
-        NodeFlag::NotSticky => String::from("sticky=off"),
-        NodeFlag::Private => String::from("private=on"),
-        NodeFlag::NotPrivate => String::from("private=off"),
-        NodeFlag::Locked => String::from("locked=on"),
-        NodeFlag::NotLocked => String::from("locked=off"),
-        NodeFlag::Marked => String::from("marked=on"),
-        NodeFlag::NotMarked => String::from("marked=off")
-    }
+    String::from(match flag {
+        NodeFlag::Hidden => "hidden=on",
+        NodeFlag::NotHidden => "hidden=off",
+        NodeFlag::Sticky => "sticky=on",
+        NodeFlag::NotSticky => "sticky=off",
+        NodeFlag::Private => "private=on",
+        NodeFlag::NotPrivate => "private=off",
+        NodeFlag::Locked => "locked=on",
+        NodeFlag::NotLocked => "locked=off",
+        NodeFlag::Marked => "marked=on",
+        NodeFlag::NotMarked => "marked=off"
+    })
 }

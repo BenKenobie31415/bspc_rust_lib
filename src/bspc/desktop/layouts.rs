@@ -4,8 +4,8 @@ pub enum Layout {
 }
 
 pub fn get_string_from_layout(layout: &Layout) -> String {
-    match layout {
-        Layout::Monocle => String::from("monocle"),
-        Layout::Tiled => String::from("tiled")
-    }
+    String::from(match layout {
+        Layout::Monocle => "monocle",
+        Layout::Tiled => "tiled"
+    })
 }

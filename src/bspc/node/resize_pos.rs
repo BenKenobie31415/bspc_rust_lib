@@ -10,14 +10,14 @@ pub enum ResizePos {
 }
 
 pub fn get_string(resize_pos: &ResizePos) -> String {
-    match resize_pos {
-        ResizePos::Top => "top".to_string(),
-        ResizePos::Left => "left".to_string(),
-        ResizePos::Bottom => "bottom".to_string(),
-        ResizePos::Right => "right".to_string(),
-        ResizePos::TopLeft => "top_left".to_string(),
-        ResizePos::TopRight => "top_right".to_string(),
-        ResizePos::BottomRight => "bottom_right".to_string(),
-        ResizePos::BottomLeft => "bottom_left".to_string()
-    }
+    String::from(match resize_pos {
+        ResizePos::Top => "top",
+        ResizePos::Left => "left",
+        ResizePos::Bottom => "bottom",
+        ResizePos::Right => "right",
+        ResizePos::TopLeft => "top_left",
+        ResizePos::TopRight => "top_right",
+        ResizePos::BottomRight => "bottom_right",
+        ResizePos::BottomLeft => "bottom_left"
+    })
 }

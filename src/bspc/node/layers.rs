@@ -5,9 +5,9 @@ pub enum NodeLayer {
 }
 
 pub fn get_string(layer: &NodeLayer) -> String {
-    match layer {
-        NodeLayer::Below => String::from("below"),
-        NodeLayer::Normal => String::from("normal"),
-        NodeLayer::Above => String::from("above")
-    }
+    String::from(match layer {
+        NodeLayer::Below => "below",
+        NodeLayer::Normal => "normal",
+        NodeLayer::Above => "above"
+    })
 }
