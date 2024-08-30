@@ -1,7 +1,13 @@
 [package]
 name = "bspc_rust_lib"
 version = "0.1.0"
-edition = "2021"
+authors = ["BenKenobi <villauben@gmail.com>"]
+edition = '2021'
+description = "A library that allows bspc commands to be executed through rust programs"
+repository = "https://github.com/BenKenobie31415/bspc_rust_lib"
+license = "GPL-3.0-only"
+keywords = ["bspwm", "bspc"]
+categories = ["os::unix-apis"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
