@@ -1,6 +1,9 @@
 use crate::bspc::node::path::Path;
+
+use super::direction::Direction;
 pub enum NodeDescriptor {
-    // TODO path
+    Dir(Direction),
+    Path(Path),
     Any,
     FirstAncestor,
     Last,
@@ -12,24 +15,24 @@ pub enum NodeDescriptor {
     Biggest,
     Smallest,
     Id(String),
-    Path(Path)
 }
 
 impl NodeDescriptor {
     pub fn get_string(&self) -> String {
         String::from(match self {
-            NodeDescriptor::Any => "any",
-            NodeDescriptor::FirstAncestor => "first_ancestor",
-            NodeDescriptor::Last => "last",
-            NodeDescriptor::Newest => "newest",
-            NodeDescriptor::Older => "older",
-            NodeDescriptor::Newer => "newer",
-            NodeDescriptor::Focused => "focused",
-            NodeDescriptor::Pointed => "pointed",
-            NodeDescriptor::Biggest => "biggest",
-            NodeDescriptor::Smallest => "smallest",
+            NodeDescriptor::Dir(direction) => direction.get_string(),
+            NodeDescriptor::Path(path) => path.assemble(),
+            NodeDescriptor::Any => "any".to_string(),
+            NodeDescriptor::FirstAncestor => "first_ancestor".to_string(),
+            NodeDescriptor::Last => "last".to_string(),
+            NodeDescriptor::Newest => "newest".to_string(),
+            NodeDescriptor::Older => "older".to_string(),
+            NodeDescriptor::Newer => "newer".to_string(),
+            NodeDescriptor::Focused => "focused".to_string(),
+            NodeDescriptor::Pointed => "pointed".to_string(),
+            NodeDescriptor::Biggest => "biggest".to_string(),
+            NodeDescriptor::Smallest => "smallest".to_string(),
             NodeDescriptor::Id(id) => id,
-            NodeDescriptor::Path(path) => {return path.assemble();}
         })
     }
 }

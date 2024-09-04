@@ -1,6 +1,6 @@
 use super::{modifier::NodeModifier, descriptor::NodeDescriptor};
 pub struct NodeSelector {
-    pub reference_selector: Option<String>,
+    pub reference_selector: Option<Box<NodeSelector>>,
     pub descriptor: Option<NodeDescriptor>,
     pub modifiers: Vec<NodeModifier>
 }
@@ -14,22 +14,22 @@ impl NodeSelector {
         }
     }
 
-    pub fn set_reference_selector(mut self, reference_selector: String) -> Self {
-        self.reference_selector = Some(reference_selector);
-        self
+    pub fn set_reference_selector(mut self, reference_selector: NodeSelector) -> Self {
+        self.reference_selector = Some(Box::new(reference_selector));
+        return self;
     }
     pub fn set_descriptor(mut self, descriptor: NodeDescriptor) -> Self {
         self.descriptor = Some(descriptor);
-        self
+        return self;
     }
     pub fn add_modifier(mut self, modifier: NodeModifier) -> Self {
         self.modifiers.push(modifier);
-        self
+        return self;
     }
 
     pub(crate) fn assemble(&self) -> String {
         let mut result: String = match &self.reference_selector {
-            Some(reference_selector) => format!("{}#", reference_selector),
+            Some(reference_selector) => format!("{}#", reference_selector.assemble()),
             None => String::new()
         };
         match &self.descriptor {
