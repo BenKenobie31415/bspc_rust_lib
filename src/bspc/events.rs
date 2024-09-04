@@ -1,8 +1,10 @@
+/// For documentation on the event-payload and the causes of an event see the bspc-manpage.
 pub enum Event {
     //TODO Report,
     MonitorAdd,
     MonitorRename,
     MonitorRemove,
+    
     MonitorSwap,
     MonitorFocus,
     MonitorGeometry,
@@ -68,7 +70,8 @@ impl Event {
         }
     }
 
-    pub fn get_argc(&self) -> usize {
+    /// Returns how many values are contained within the payload that is given by the bspc-event
+    pub fn get_payload_count(&self) -> usize {
         match self {
             Event::MonitorAdd => 3,
             Event::MonitorRename => 3,

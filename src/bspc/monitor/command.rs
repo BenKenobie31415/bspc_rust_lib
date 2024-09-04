@@ -1,12 +1,25 @@
 use crate::{bspc::monitor::selection as MonitorSelection, socket_communication::{send_message, get_bspc_socket_path}};
 
 pub enum MonitorCommand {
+    /// Focuses the given monitor.
+    /// # Arugments
+    /// - `monitor_sel`: The `MonitorSelector` that specifies the monitor to focus
     Focus(MonitorSelection::MonitorSelector),
+    /// Swaps the given monitor with the focused monitor.
+    /// # Arguments
+    /// - `monitor_sel`: The `MonitorSelector` that specifies the monitor to swap with the focused monitor
     Swap(MonitorSelection::MonitorSelector),
+    /// Adds desktops to the focused monitor.
+    /// # Arguments
+    /// - `desktop_names`: The names of the desktops to add
     AddDesktops(Vec<String>),
+    /// Reorders desktops of the focused monitor.
     ReorderDesktops(Vec<String>),
+    /// Sets the rectangle of the selected monitor.
     Rectangle(u32, u32, u32, u32),
+    /// Renames the focused monitor.
     Rename(String),
+    /// Removes the focused monitor.
     Remove
 }
 
