@@ -1,6 +1,6 @@
 use crate::socket_communication;
 
-use super::{desktop::selector::DesktopSelector, monitor::selection::MonitorSelector, node::selector::NodeSelector};
+use super::{desktop::selector::DesktopSelector, monitor::selector::MonitorSelector, node::selector::NodeSelector};
 
 /// Enum containing the different bspc commands to query information about the state of bspwm.
 /// Generally acts like the bspc-query command concerning defaults and other behaviour.
@@ -36,7 +36,7 @@ pub enum QueryCommand {
 }
 
 impl QueryCommand {
-    fn assemble(&self) -> Vec<String> {
+    pub(crate) fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("query"));
         match self {
@@ -109,9 +109,9 @@ impl QueryCommand {
 fn push_node_selector(curr_selector: &mut Vec<String>, node_sel: &Option<NodeSelector>) {
     match node_sel {
         Some(sel) => {
-            let assembled_selector = sel.assemble();
+            let assembled_selector = sel.assemble(None);
             if !assembled_selector.is_empty() {
-                curr_selector.push("-n".to_string());
+                curr_selector.push("--node".to_string());
                 curr_selector.push(assembled_selector);
             }
         }
@@ -122,9 +122,9 @@ fn push_node_selector(curr_selector: &mut Vec<String>, node_sel: &Option<NodeSel
 fn push_desktop_selector(curr_selector: &mut Vec<String>, desktop_sel: &Option<DesktopSelector>) {
     match desktop_sel {
         Some(sel) => {
-            let assembled_selector = sel.assemble();
+            let assembled_selector = sel.assemble(None);
             if !assembled_selector.is_empty() {
-                curr_selector.push("-d".to_string());
+                curr_selector.push("--desktop".to_string());
                 curr_selector.push(assembled_selector);
             }
         }
@@ -135,9 +135,9 @@ fn push_desktop_selector(curr_selector: &mut Vec<String>, desktop_sel: &Option<D
 fn push_monitor_selector(curr_selector: &mut Vec<String>, monitor_sel: &Option<MonitorSelector>) {
     match monitor_sel {
         Some(sel) => {
-            let assembled_selector = sel.assemble();
+            let assembled_selector = sel.assemble(None);
             if !assembled_selector.is_empty() {
-                curr_selector.push("-m".to_string());
+                curr_selector.push("--monitor".to_string());
                 curr_selector.push(assembled_selector);
             }
         }

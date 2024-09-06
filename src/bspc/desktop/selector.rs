@@ -28,16 +28,23 @@ impl DesktopSelector {
         return self;
     }
 
-    pub(crate) fn assemble(&self) -> String {
+    pub(crate) fn assemble(&self, default: Option<&DesktopDescriptor>) -> String {
         let mut result: String = match &self.reference_selector {
-            Some(reference_selector) => format!("{}#", reference_selector.assemble()),
+            Some(reference_selector) => format!("{}#", reference_selector.assemble(None)),
             None => String::new()
         };
         match &self.descriptor {
             Some(descriptor) => {
                 result.push_str(&descriptor.get_string());
             },
-            None => {}
+            None => {
+                match default {
+                    Some(default_value) => {
+                        result.push_str(&default_value.get_string());
+                    }
+                    None => {}
+                }
+            }
         }
         for modifier in &self.modifiers {
             result.push_str(&modifier.get_string());

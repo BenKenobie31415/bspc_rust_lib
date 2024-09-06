@@ -1,6 +1,8 @@
 use crate::socket_communication;
 
-use super::selection::MonitorSelector;
+use super::{descriptor::MonitorDescriptor, selector::MonitorSelector};
+
+static DEFAULT_DESCRIPTOR: Option<&MonitorDescriptor> = Some(&MonitorDescriptor::Focused);
 
 pub enum MonitorCommand {
     /// Focuses the selected monitor.
@@ -45,40 +47,40 @@ impl MonitorCommand {
         socket_communication::send_message(self.assemble())
     }
 
-    fn assemble(&self) -> Vec<String> {
+    pub(crate) fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("monitor"));
         match self {
             MonitorCommand::Focus(monitor_sel) => {
                 result.push(String::from("--focus"));
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
             }
             MonitorCommand::Swap(monitor_sel) => {
                 result.push(String::from("--swap"));
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
             }
             MonitorCommand::AddDesktops(monitor_sel, desktops) => {
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--add-desktops"));
                 result.push(desktops.join(" "));
             }
             MonitorCommand::ReorderDesktops(monitor_sel, desktops) => {
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--reorder-desktops"));
                 result.push(desktops.join(" "));
             }
             MonitorCommand::Rectangle(monitor_sel, width, height, x, y) => {
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--rectangle"));
                 result.push(format!("{}x{}+{}+{}", width, height, x, y));
             }
             MonitorCommand::Rename(monitor_sel, name) => {
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--rename"));
                 result.push(name.to_string());
             }
             MonitorCommand::Remove(monitor_sel) => {
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--remove"));
             }
         }

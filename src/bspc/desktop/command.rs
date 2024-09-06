@@ -1,6 +1,8 @@
-use crate::{bspc::{cycle_direction::CycleDir, monitor::selection::MonitorSelector}, socket_communication};
+use crate::{bspc::{cycle_direction::CycleDir, monitor::selector::MonitorSelector}, socket_communication};
 
-use super::{layout::Layout, selector::DesktopSelector};
+use super::{descriptor::DesktopDescriptor, layout::Layout, selector::DesktopSelector};
+
+static DEFAULT_DESCRIPTOR: Option<&DesktopDescriptor> = Some(&DesktopDescriptor::Focused);
 
 pub enum DesktopCommand {
     /// Focuses the selected desktop.
@@ -54,56 +56,56 @@ impl DesktopCommand {
         socket_communication::send_message(self.assemble())
     }
 
-    fn assemble(&self) -> Vec<String> {
+    pub(crate) fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("desktop"));
         match self {
             DesktopCommand::Focus(desktop_sel) => {
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--focus"));
-                result.push(desktop_sel.assemble());
             }
             DesktopCommand::Activate(desktop_sel) => {
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--activate"));
-                result.push(desktop_sel.assemble());
             }
             DesktopCommand::ToMonitor(desktop_sel, monitor_sel, follow) => {
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--to-monitor"));
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(None));
                 if *follow {
                     result.push(String::from("--follow"));
                 }
             }
             DesktopCommand::Swap(desktop_sel1, desktop_sel2, follow) => {
-                result.push(desktop_sel1.assemble());
+                result.push(desktop_sel1.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--swap"));
-                result.push(desktop_sel2.assemble());
+                result.push(desktop_sel2.assemble(None));
                 if *follow {
                     result.push(String::from("--follow"));
                 }
             }
             DesktopCommand::Layout(desktop_sel, layout) => {
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--layout"));
                 result.push(layout.get_string());
             }
             DesktopCommand::Layout2(desktop_sel, cycle_dir) => {
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--layout"));
                 result.push(cycle_dir.get_string());
             }
             DesktopCommand::Rename(desktop_sel, name) => {
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--rename"));
                 result.push(name.to_string());
             }
             DesktopCommand::Bubble(desktop_sel, cycle_dir) => {
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--bubble"));
                 result.push(cycle_dir.get_string());
             }
             DesktopCommand::Remove(desktop_sel) => {
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--remove"));
             }
         }

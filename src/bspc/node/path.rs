@@ -37,7 +37,7 @@ impl Path {
 
         match &self.desktop_selector {
             Some(selector) => {
-                result.push_str(&selector.assemble());
+                result.push_str(&selector.assemble(None));
                 result.push_str(":");
             }
             None => ()

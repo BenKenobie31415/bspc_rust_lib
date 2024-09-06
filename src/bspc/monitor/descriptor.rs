@@ -28,8 +28,8 @@ impl MonitorDescriptor {
             MonitorDescriptor::Pointed => "pointed".to_string(),
             MonitorDescriptor::Primary => "primary".to_string(),
             MonitorDescriptor::Nth(n) => format!("^{}", n),
-            MonitorDescriptor::Id(id) => id,
-            MonitorDescriptor::Name(name) => name
+            MonitorDescriptor::Id(id) => id.to_string(),
+            MonitorDescriptor::Name(name) => name.to_string()
         }
     }
 }

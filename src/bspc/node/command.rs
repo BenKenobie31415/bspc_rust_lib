@@ -1,6 +1,8 @@
-use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selection::MonitorSelector}, socket_communication};
+use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selector::MonitorSelector}, socket_communication};
 
-use super::{direction::Direction, flag::NodeFlag, layer::NodeLayer, resize_pos::ResizePos, selector::NodeSelector, state::NodeState};
+use super::{descriptor::NodeDescriptor, direction::Direction, flag::NodeFlag, layer::NodeLayer, resize_pos::ResizePos, selector::NodeSelector, state::NodeState};
+
+static DEFAULT_DESCRIPTOR: Option<&NodeDescriptor> = Some(&NodeDescriptor::Focused);
 
 /// Commands that act on nodes
 pub enum NodeCommand {
@@ -74,11 +76,12 @@ pub enum NodeCommand {
     /// # Arguments
     /// - `node_sel`: The node to set the state for
     /// - `state`: New flag of the focused node
-    State(NodeSelector, NodeState),
+    State(NodeSelector, NodeState, bool),
     /// Sets/toggles flag for the selected node.
     /// # Arguments
     /// - `node_sel`: The node to set/toggle the flag for
     /// - `flag`: The flag to set/toggle
+    /// - `toggle`: If toggle is true and the chosen state is the current state of the selected node, the node is set to its previous state
     Flag(NodeSelector, NodeFlag),
     /// Sets the layer for the selected node.
     /// # Arguments
@@ -101,90 +104,94 @@ impl NodeCommand {
         socket_communication::send_message(self.assemble())
     }
 
-    fn assemble(&self) -> Vec<String> {
+    pub(crate) fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("node"));
         match self {
             NodeCommand::Focus(node_sel) => {
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--focus"));
-                result.push(node_sel.assemble());
             }
             NodeCommand::Activate(node_sel) => {
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--activate"));
-                result.push(node_sel.assemble());
             }
             NodeCommand::ToDesktop(node_sel, desktop_sel, follow) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--to-desktop"));
-                result.push(desktop_sel.assemble());
+                result.push(desktop_sel.assemble(None));
                 if *follow {
                     result.push(String::from("--follow"));
                 }
             }
             NodeCommand::ToMonitor(node_sel, monitor_sel, follow) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--to-monitor"));
-                result.push(monitor_sel.assemble());
+                result.push(monitor_sel.assemble(None));
                 if *follow {
                     result.push(String::from("--follow"));
                 }
             }
             NodeCommand::ToNode(node_sel1, node_sel2, follow) => {
-                result.push(node_sel1.assemble());
+                result.push(node_sel1.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--to-node"));
-                result.push(node_sel2.assemble());
+                result.push(node_sel2.assemble(None));
                 if *follow {
                     result.push(String::from("--follow"));
                 }
             }
             NodeCommand::Swap(node_sel1, node_sel2) => {
-                result.push(node_sel1.assemble());
+                result.push(node_sel1.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--swap"));
-                result.push(node_sel2.assemble());
+                result.push(node_sel2.assemble(None));
             }
             NodeCommand::PreselectDirection(node_sel, direction) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--presel-dir"));
                 result.push(direction.get_string());
             }
             NodeCommand::Move(node_sel, x, y) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--move"));
                 result.push(x.to_string());
                 result.push(y.to_string());
             }
             NodeCommand::Resize(node_sel, resize_pos, x, y) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--resize"));
                 result.push(resize_pos.get_string());
                 result.push(x.to_string());
                 result.push(y.to_string());
             }
             NodeCommand::Ratio(node_sel, ratio) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--ratio"));
                 result.push(ratio.to_string());
             }
             NodeCommand::Equalize(node_sel) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--equalize"));
             }
             NodeCommand::Balance(node_sel) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--balance"));
             }
-            NodeCommand::State(node_sel, state) => {
-                result.push(node_sel.assemble());
+            NodeCommand::State(node_sel, state, toggle) => {
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--state"));
-                result.push(state.get_string());
+                let prefix = match toggle {
+                    true => "~",
+                    false => "",
+                };
+                result.push(format!("{}{}", prefix, state.get_string()));
             }
             NodeCommand::Flag(node_sel, flag) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--flag"));
                 result.push(flag.get_string());
             }
             NodeCommand::Layer(node_sel, layer) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--layer"));
                 result.push(layer.get_string());
             }
@@ -192,11 +199,11 @@ impl NodeCommand {
                 result.push(String::from("--insert-receptacle"));
             }
             NodeCommand::Close(node_sel) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--close"));
             }
             NodeCommand::Kill(node_sel) => {
-                result.push(node_sel.assemble());
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--kill"));
             }
         }
