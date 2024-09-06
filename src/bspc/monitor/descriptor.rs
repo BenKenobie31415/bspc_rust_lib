@@ -1,6 +1,7 @@
+use crate::bspc::cycle_direction::CycleDir;
+
 pub enum MonitorDescriptor {
-    // TODO path
-    // TODO cycle_dir
+    CycleDir(CycleDir),
     Any,
     Last,
     Newest,
@@ -16,18 +17,19 @@ pub enum MonitorDescriptor {
 
 impl MonitorDescriptor {
     pub fn get_string(&self) -> String {
-        String::from(match self {
-            MonitorDescriptor::Any => "any",
-            MonitorDescriptor::Last => "last",
-            MonitorDescriptor::Newest => "newest",
-            MonitorDescriptor::Older => "older",
-            MonitorDescriptor::Newer => "newer",
-            MonitorDescriptor::Focused => "focused",
-            MonitorDescriptor::Pointed => "pointed",
-            MonitorDescriptor::Primary => "primary",
-            MonitorDescriptor::Nth(n) => {return format!("^{}", n);},
+        match self {
+            MonitorDescriptor::CycleDir(cycle_dir) => cycle_dir.get_string(),
+            MonitorDescriptor::Any => "any".to_string(),
+            MonitorDescriptor::Last => "last".to_string(),
+            MonitorDescriptor::Newest => "newest".to_string(),
+            MonitorDescriptor::Older => "older".to_string(),
+            MonitorDescriptor::Newer => "newer".to_string(),
+            MonitorDescriptor::Focused => "focused".to_string(),
+            MonitorDescriptor::Pointed => "pointed".to_string(),
+            MonitorDescriptor::Primary => "primary".to_string(),
+            MonitorDescriptor::Nth(n) => format!("^{}", n),
             MonitorDescriptor::Id(id) => id,
             MonitorDescriptor::Name(name) => name
-        })
+        }
     }
 }
