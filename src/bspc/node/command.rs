@@ -3,7 +3,7 @@ use crate::bspc::node::flag as NodeFlag;
 use crate::bspc::node::layer as NodeLayer;
 use crate::bspc::node::resize_pos as ResizePos;
 
-use crate::bspc::desktop::selection as DesktopSelection;
+use crate::bspc::desktop::selector as DesktopSelection;
 use crate::bspc::monitor::selection as MonitorSelection;
 use crate::socket_communication::get_bspc_socket_path;
 use crate::socket_communication::send_message;

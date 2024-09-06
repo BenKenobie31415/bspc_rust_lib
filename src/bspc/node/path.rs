@@ -1,5 +1,3 @@
-use std::{borrow::BorrowMut, collections::VecDeque};
-
 use crate::bspc::desktop::selector::DesktopSelector;
 
 use super::direction::Direction;

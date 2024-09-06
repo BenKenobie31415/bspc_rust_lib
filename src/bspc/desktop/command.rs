@@ -101,7 +101,7 @@ impl DesktopCommand {
             DesktopCommand::Rename(desktop_sel, name) => {
                 result.push(desktop_sel.assemble());
                 result.push(String::from("--rename"));
-                result.push(name);
+                result.push(name.to_string());
             }
             DesktopCommand::Bubble(desktop_sel, cycle_dir) => {
                 result.push(desktop_sel.assemble());

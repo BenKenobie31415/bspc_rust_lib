@@ -1,7 +1,7 @@
 use super::{descriptor::DesktopDescriptor, modifier::DesktopModifier};
 
 pub struct DesktopSelector {
-    pub reference_selector: Option<DesktopSelector>,
+    pub reference_selector: Option<Box<DesktopSelector>>,
     pub descriptor: Option<DesktopDescriptor>,
     pub modifiers: Vec<DesktopModifier>
 }
@@ -16,21 +16,21 @@ impl DesktopSelector {
     }
 
     pub fn set_reference_selector(mut self, reference_selector: DesktopSelector) -> Self {
-        self.reference_selector = Some(reference_selector);
-        self
+        self.reference_selector = Some(Box::new(reference_selector));
+        return self;
     }
     pub fn set_descriptor(mut self, descriptor: DesktopDescriptor) -> Self {
         self.descriptor = Some(descriptor);
-        self
+        return self;
     }
     pub fn add_modifier(mut self, modifier: DesktopModifier) -> Self {
         self.modifiers.push(modifier);
-        self
+        return self;
     }
 
-    pub(crate) fn assemble(&self) -> DesktopSelector {
+    pub(crate) fn assemble(&self) -> String {
         let mut result: String = match &self.reference_selector {
-            Some(reference_selector) => format!("{}#", reference_selector),
+            Some(reference_selector) => format!("{}#", reference_selector.assemble()),
             None => String::new()
         };
         match &self.descriptor {
@@ -42,6 +42,6 @@ impl DesktopSelector {
         for modifier in &self.modifiers {
             result.push_str(&modifier.get_string());
         }
-        result
+        return result;
     }
 }

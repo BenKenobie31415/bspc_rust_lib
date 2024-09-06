@@ -19,7 +19,7 @@ pub enum NodeDescriptor {
 
 impl NodeDescriptor {
     pub fn get_string(&self) -> String {
-        String::from(match self {
+        match self {
             NodeDescriptor::Dir(direction) => direction.get_string(),
             NodeDescriptor::Path(path) => path.assemble(),
             NodeDescriptor::Any => "any".to_string(),
@@ -32,7 +32,7 @@ impl NodeDescriptor {
             NodeDescriptor::Pointed => "pointed".to_string(),
             NodeDescriptor::Biggest => "biggest".to_string(),
             NodeDescriptor::Smallest => "smallest".to_string(),
-            NodeDescriptor::Id(id) => id,
-        })
+            NodeDescriptor::Id(id) => id.to_string(),
+        }
     }
 }

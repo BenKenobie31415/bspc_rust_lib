@@ -1,7 +1,7 @@
 use crate::socket_communication::{send_message, get_bspc_socket_path};
 
 use super::node::selector as NodeSelection;
-use super::desktop::selection as DesktopSelection;
+use super::desktop::selector as DesktopSelection;
 use super::monitor::selection as MonitorSelection;
 use NodeSelection::NodeSelector;
 use DesktopSelection::DesktopSelector;
