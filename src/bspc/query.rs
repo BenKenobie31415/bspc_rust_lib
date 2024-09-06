@@ -1,12 +1,6 @@
-use crate::socket_communication::{send_message, get_bspc_socket_path};
+use crate::socket_communication;
 
-use super::node::selector as NodeSelection;
-use super::desktop::selector as DesktopSelection;
-use super::monitor::selection as MonitorSelection;
-use NodeSelection::NodeSelector;
-use DesktopSelection::DesktopSelector;
-use MonitorSelection::MonitorSelector;
-
+use super::{desktop::selector::DesktopSelector, monitor::selection::MonitorSelector, node::selector::NodeSelector};
 
 /// Enum containing the different bspc commands to query information about the state of bspwm.
 /// Generally acts like the bspc-query command concerning defaults and other behaviour.
@@ -100,7 +94,7 @@ impl QueryCommand {
 
     /// Executes the command and returns the result of the query returned by bspc
     pub fn get_response(&self) -> Option<Vec<String>> {
-        match send_message(get_bspc_socket_path(), self.assemble()) {
+        match socket_communication::send_message(self.assemble()) {
             Some(message) => {
                 if message.len() > 0 {
                     return Some(message);

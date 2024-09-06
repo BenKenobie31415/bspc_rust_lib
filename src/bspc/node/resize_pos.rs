@@ -9,15 +9,17 @@ pub enum ResizePos {
     BottomLeft
 }
 
-pub fn get_string(resize_pos: &ResizePos) -> String {
-    String::from(match resize_pos {
-        ResizePos::Top => "top",
-        ResizePos::Left => "left",
-        ResizePos::Bottom => "bottom",
-        ResizePos::Right => "right",
-        ResizePos::TopLeft => "top_left",
-        ResizePos::TopRight => "top_right",
-        ResizePos::BottomRight => "bottom_right",
-        ResizePos::BottomLeft => "bottom_left"
-    })
+impl ResizePos {
+    pub fn get_string(&self) -> String {
+        String::from(match self {
+            ResizePos::Top => "top",
+            ResizePos::Left => "left",
+            ResizePos::Bottom => "bottom",
+            ResizePos::Right => "right",
+            ResizePos::TopLeft => "top_left",
+            ResizePos::TopRight => "top_right",
+            ResizePos::BottomRight => "bottom_right",
+            ResizePos::BottomLeft => "bottom_left"
+        })
+    }
 }

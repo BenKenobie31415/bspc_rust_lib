@@ -4,10 +4,12 @@ pub enum NodeLayer {
     Above
 }
 
-pub fn get_string(layer: &NodeLayer) -> String {
-    String::from(match layer {
-        NodeLayer::Below => "below",
-        NodeLayer::Normal => "normal",
-        NodeLayer::Above => "above"
-    })
+impl NodeLayer {
+    pub fn get_string(&self) -> String {
+        String::from(match self {
+            NodeLayer::Below => "below",
+            NodeLayer::Normal => "normal",
+            NodeLayer::Above => "above"
+        })
+    }
 }

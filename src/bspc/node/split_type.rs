@@ -3,10 +3,12 @@ pub enum SplitType {
     Vertical,
 }
 
-pub fn get_string(split_type: &SplitType) -> String {
-    String::from(match split_type {
-        SplitType::Horizontal => "horizontal",
-        SplitType::Vertical => "vertical",
-    })
+impl SplitType {
+    pub fn get_string(&self) -> String {
+        String::from(match self {
+            SplitType::Horizontal => "horizontal",
+            SplitType::Vertical => "vertical",
+        })
+    }
 }
 

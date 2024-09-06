@@ -1,14 +1,16 @@
-use crate::{bspc::monitor::selection as MonitorSelection, socket_communication::{send_message, get_bspc_socket_path}};
+use crate::socket_communication;
+
+use super::selection::MonitorSelector;
 
 pub enum MonitorCommand {
     /// Focuses the given monitor.
     /// # Arugments
     /// - `monitor_sel`: The `MonitorSelector` that specifies the monitor to focus
-    Focus(MonitorSelection::MonitorSelector),
+    Focus(MonitorSelector),
     /// Swaps the given monitor with the focused monitor.
     /// # Arguments
     /// - `monitor_sel`: The `MonitorSelector` that specifies the monitor to swap with the focused monitor
-    Swap(MonitorSelection::MonitorSelector),
+    Swap(MonitorSelector),
     /// Adds desktops to the focused monitor.
     /// # Arguments
     /// - `desktop_names`: The names of the desktops to add
@@ -25,7 +27,7 @@ pub enum MonitorCommand {
 
 impl MonitorCommand {
     pub fn get_response(&self) -> Option<Vec<String>> {
-        send_message(get_bspc_socket_path(), self.assemble())
+        socket_communication::send_message(self.assemble())
     }
 
     fn assemble(&self) -> Vec<String> {

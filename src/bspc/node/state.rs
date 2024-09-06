@@ -5,11 +5,13 @@ pub enum NodeState {
     Fullscreen
 }
 
-pub fn get_string(node_state: &NodeState) -> String {
-    String::from(match node_state {
-        NodeState::Tiled => "tiled",
-        NodeState::PseudoTiled => "pseudo_tiled",
-        NodeState::Floating => "floating",
-        NodeState::Fullscreen => "fullscreen"
-    })
+impl NodeState{
+    pub fn get_string(&self) -> String {
+        String::from(match self {
+            NodeState::Tiled => "tiled",
+            NodeState::PseudoTiled => "pseudo_tiled",
+            NodeState::Floating => "floating",
+            NodeState::Fullscreen => "fullscreen"
+        })
+    }
 }

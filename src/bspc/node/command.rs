@@ -1,18 +1,6 @@
-use crate::bspc::node::state as NodeState;
-use crate::bspc::node::flag as NodeFlag;
-use crate::bspc::node::layer as NodeLayer;
-use crate::bspc::node::resize_pos as ResizePos;
+use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selection::MonitorSelector}, socket_communication};
 
-use crate::bspc::desktop::selector as DesktopSelection;
-use crate::bspc::monitor::selection as MonitorSelection;
-use crate::socket_communication::get_bspc_socket_path;
-use crate::socket_communication::send_message;
-
-use DesktopSelection::DesktopSelector;
-use MonitorSelection::MonitorSelector;
-
-use super::direction::Direction;
-use super::selector::NodeSelector;
+use super::{direction::Direction, flag::NodeFlag, layer::NodeLayer, resize_pos::ResizePos, selector::NodeSelector, state::NodeState};
 
 /// Commands that act on nodes
 pub enum NodeCommand {
@@ -65,7 +53,7 @@ pub enum NodeCommand {
     /// - `resize_pos`: The position to start resizing from
     /// - `dx`: How much to resize to the right
     /// - `dx`: How much to resize downwards
-    Resize(NodeSelector, ResizePos::ResizePos, i32, i32),
+    Resize(NodeSelector, ResizePos, i32, i32),
     /// Sets the splitting ratio of the selected node.
     /// # Arguments
     /// - `node_sel`: The node to set the splitting ratio for.
@@ -86,17 +74,17 @@ pub enum NodeCommand {
     /// # Arguments
     /// - `node_sel`: The node to set the state for
     /// - `state`: New flag of the focused node
-    State(NodeSelector, NodeState::NodeState),
+    State(NodeSelector, NodeState),
     /// Sets/toggles flag for the selected node.
     /// # Arguments
     /// - `node_sel`: The node to set/toggle the flag for
     /// - `flag`: The flag to set/toggle
-    Flag(NodeSelector, NodeFlag::NodeFlag),
+    Flag(NodeSelector, NodeFlag),
     /// Sets the layer for the selected node.
     /// # Arguments
     /// - `node_sel`: The node to set the layer for
     /// - `layer`: The layer to set
-    Layer(NodeSelector, NodeLayer::NodeLayer),
+    Layer(NodeSelector, NodeLayer),
     InsertReceptacle,
     /// Closes the selected node.
     /// # Arguments
@@ -110,7 +98,7 @@ pub enum NodeCommand {
 
 impl NodeCommand {
     pub fn get_response(&self) -> Option<Vec<String>> {
-        send_message(get_bspc_socket_path(), self.assemble())
+        socket_communication::send_message(self.assemble())
     }
 
     fn assemble(&self) -> Vec<String> {
@@ -168,7 +156,7 @@ impl NodeCommand {
             NodeCommand::Resize(node_sel, resize_pos, x, y) => {
                 result.push(node_sel.assemble());
                 result.push(String::from("--resize"));
-                result.push(ResizePos::get_string(resize_pos));
+                result.push(resize_pos.get_string());
                 result.push(x.to_string());
                 result.push(y.to_string());
             }
@@ -188,17 +176,17 @@ impl NodeCommand {
             NodeCommand::State(node_sel, state) => {
                 result.push(node_sel.assemble());
                 result.push(String::from("--state"));
-                result.push(NodeState::get_string(state));
+                result.push(state.get_string());
             }
             NodeCommand::Flag(node_sel, flag) => {
                 result.push(node_sel.assemble());
                 result.push(String::from("--flag"));
-                result.push(NodeFlag::get_string(flag));
+                result.push(flag.get_string());
             }
             NodeCommand::Layer(node_sel, layer) => {
                 result.push(node_sel.assemble());
                 result.push(String::from("--layer"));
-                result.push(NodeLayer::get_string(layer));
+                result.push(layer.get_string());
             }
             NodeCommand::InsertReceptacle => {
                 result.push(String::from("--insert-receptacle"));

@@ -1,12 +1,6 @@
-use crate::bspc::cycle_direction::CycleDir;
-use crate::bspc::desktop::selector as DesktopSel;
-use crate::bspc::monitor::selection as MonitorSel;
-use crate::socket_communication::{send_message, get_bspc_socket_path};
+use crate::{bspc::{cycle_direction::CycleDir, monitor::selection::MonitorSelector}, socket_communication};
 
-use DesktopSel::DesktopSelector;
-use MonitorSel::MonitorSelector;
-
-use super::layout::Layout;
+use super::{layout::Layout, selector::DesktopSelector};
 
 pub enum DesktopCommand {
     /// Focuses the selected desktop.
@@ -57,7 +51,7 @@ pub enum DesktopCommand {
 
 impl DesktopCommand {
     pub fn get_response(&self) -> Option<Vec<String>> {
-        send_message(get_bspc_socket_path(), self.assemble())
+        socket_communication::send_message(self.assemble())
     }
 
     fn assemble(&self) -> Vec<String> {
