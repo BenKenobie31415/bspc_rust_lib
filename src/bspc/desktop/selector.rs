@@ -1,7 +1,7 @@
 use super::{descriptor::DesktopDescriptor, modifier::DesktopModifier};
 
 pub struct DesktopSelector {
-    pub reference_selector: Option<String>,
+    pub reference_selector: Option<DesktopSelector>,
     pub descriptor: Option<DesktopDescriptor>,
     pub modifiers: Vec<DesktopModifier>
 }
@@ -15,7 +15,7 @@ impl DesktopSelector {
         }
     }
 
-    pub fn set_reference_selector(mut self, reference_selector: String) -> Self {
+    pub fn set_reference_selector(mut self, reference_selector: DesktopSelector) -> Self {
         self.reference_selector = Some(reference_selector);
         self
     }
@@ -28,7 +28,7 @@ impl DesktopSelector {
         self
     }
 
-    pub(crate) fn assemble(&self) -> String {
+    pub(crate) fn assemble(&self) -> DesktopSelector {
         let mut result: String = match &self.reference_selector {
             Some(reference_selector) => format!("{}#", reference_selector),
             None => String::new()

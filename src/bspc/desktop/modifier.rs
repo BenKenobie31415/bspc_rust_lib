@@ -1,6 +1,4 @@
 pub enum DesktopModifier {
-    Id(String),
-    Name(String),
     Focused,
     NotFocused,
     Active,
@@ -16,8 +14,6 @@ pub enum DesktopModifier {
 impl DesktopModifier {
     pub fn get_string(&self) -> String {
         String::from(match self {
-            DesktopModifier::Id(id) => id,
-            DesktopModifier::Name(name) => name,
             DesktopModifier::Focused => ".focused",
             DesktopModifier::NotFocused => ".!focused",
             DesktopModifier::Active => ".active",

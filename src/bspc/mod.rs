@@ -3,3 +3,4 @@ pub mod desktop;
 pub mod monitor;
 pub mod query;
 pub mod events;
+pub mod cycle_direction;

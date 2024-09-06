@@ -1,5 +1,4 @@
 pub enum DesktopDescriptor {
-    // TODO path
     Any,
     Last,
     Newest,
