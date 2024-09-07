@@ -104,7 +104,7 @@ impl NodeCommand {
         socket_communication::send_message(self.assemble())
     }
 
-    pub(crate) fn assemble(&self) -> Vec<String> {
+    fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("node"));
         match self {
@@ -208,5 +208,41 @@ impl NodeCommand {
             }
         }
         result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bspc::{desktop::{descriptor::DesktopDescriptor, selector::DesktopSelector}, node::{command::NodeCommand, descriptor::NodeDescriptor, selector::NodeSelector}};
+
+    #[test]
+    fn focus_older() {
+        let cmd = NodeCommand::Focus(NodeSelector::new().set_descriptor(NodeDescriptor::Older)).assemble();
+
+        assert_eq!(cmd, vec!["node", "older", "--focus"]);
+    }
+
+    #[test]
+    fn move_focused_to_third_desktop() {
+        let cmd = NodeCommand::ToDesktop(
+            NodeSelector::new(),
+            DesktopSelector::new().set_descriptor(DesktopDescriptor::Nth(3)),
+        true).assemble();
+
+        assert_eq!(cmd, vec!["node", "focused", "--to-desktop", "^3", "--follow"]);
+    }
+
+    #[test]
+    fn close_focused() {
+        let cmd = NodeCommand::Close(NodeSelector::new().set_descriptor(NodeDescriptor::Focused)).assemble();
+
+        assert_eq!(cmd, vec!["node", "focused", "--close"]);
+    }
+
+    #[test]
+    fn ratio() {
+        let cmd = NodeCommand::Ratio(NodeSelector::new(), 0.1).assemble();
+        
+        assert_eq!(cmd, vec!["node", "focused", "--ratio", "0.1"]);
     }
 }

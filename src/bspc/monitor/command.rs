@@ -47,7 +47,7 @@ impl MonitorCommand {
         socket_communication::send_message(self.assemble())
     }
 
-    pub(crate) fn assemble(&self) -> Vec<String> {
+    fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("monitor"));
         match self {
@@ -85,5 +85,17 @@ impl MonitorCommand {
             }
         }
         return result;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bspc::monitor::{command::MonitorCommand, descriptor::MonitorDescriptor, selector::MonitorSelector};
+
+    #[test]
+    fn remove() {
+        let cmd = MonitorCommand::Remove(MonitorSelector::new().set_descriptor(MonitorDescriptor::Name("DP1-1".to_string()))).assemble();
+
+        assert_eq!(cmd, vec!["monitor", "DP1-1", "--remove"]);
     }
 }

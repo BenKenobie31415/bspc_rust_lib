@@ -56,7 +56,7 @@ impl DesktopCommand {
         socket_communication::send_message(self.assemble())
     }
 
-    pub(crate) fn assemble(&self) -> Vec<String> {
+    fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("desktop"));
         match self {
@@ -110,5 +110,33 @@ impl DesktopCommand {
             }
         }
         return result;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bspc::{cycle_direction::CycleDir, desktop::{command::DesktopCommand, descriptor::DesktopDescriptor, selector::DesktopSelector}};
+
+
+    #[test]
+
+    fn focus_fifth() {
+        let cmd = DesktopCommand::Focus(DesktopSelector::new().set_descriptor(DesktopDescriptor::Nth(5))).assemble();
+
+        assert_eq!(cmd, vec!["desktop", "^5", "--focus"]);
+    }
+
+    #[test]
+    fn rename_focused() {
+        let cmd = DesktopCommand::Rename(DesktopSelector::new(), "testname".to_string()).assemble();
+
+        assert_eq!(cmd, vec!["desktop", "focused", "--rename", "testname"]);
+    }
+
+    #[test]
+    fn bubble_next() {
+        let cmd = DesktopCommand::Bubble(DesktopSelector::new(), CycleDir::Next).assemble();
+
+        assert_eq!(cmd, vec!["desktop", "focused", "--bubble", "next"]);
     }
 }

@@ -1,9 +1,9 @@
 use super::{modifier::NodeModifier, descriptor::NodeDescriptor};
 
 pub struct NodeSelector {
-    pub reference_selector: Option<Box<NodeSelector>>,
-    pub descriptor: Option<NodeDescriptor>,
-    pub modifiers: Vec<NodeModifier>
+    reference_selector: Option<Box<NodeSelector>>,
+    descriptor: Option<NodeDescriptor>,
+    modifiers: Vec<NodeModifier>
 }
 
 impl NodeSelector {

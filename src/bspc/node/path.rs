@@ -3,9 +3,9 @@ use crate::bspc::desktop::selector::DesktopSelector;
 use super::direction::Direction;
 
 pub struct Path {
-    pub desktop_selector: Option<DesktopSelector>,
-    pub jumps: Vec<Jump>,
-    pub absolute: bool,
+    desktop_selector: Option<DesktopSelector>,
+    jumps: Vec<Jump>,
+    absolute: bool,
 }
 
 impl Path {
@@ -32,7 +32,7 @@ impl Path {
         return self;
     }
 
-    pub fn assemble(&self) -> String {
+    pub(crate) fn assemble(&self) -> String {
         let mut result = String::from("@");
 
         match &self.desktop_selector {

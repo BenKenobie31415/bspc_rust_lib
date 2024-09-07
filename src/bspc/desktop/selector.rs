@@ -1,9 +1,9 @@
 use super::{descriptor::DesktopDescriptor, modifier::DesktopModifier};
 
 pub struct DesktopSelector {
-    pub reference_selector: Option<Box<DesktopSelector>>,
-    pub descriptor: Option<DesktopDescriptor>,
-    pub modifiers: Vec<DesktopModifier>
+    reference_selector: Option<Box<DesktopSelector>>,
+    descriptor: Option<DesktopDescriptor>,
+    modifiers: Vec<DesktopModifier>
 }
 
 impl DesktopSelector {

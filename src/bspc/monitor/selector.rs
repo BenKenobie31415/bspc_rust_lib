@@ -1,9 +1,9 @@
 use super::{modifier::MonitorModifier, descriptor::MonitorDescriptor};
 
 pub struct MonitorSelector {
-    pub reference_selector: Option<String>,
-    pub descriptor: Option<MonitorDescriptor>,
-    pub modifiers: Vec<MonitorModifier>
+    reference_selector: Option<String>,
+    descriptor: Option<MonitorDescriptor>,
+    modifiers: Vec<MonitorModifier>
 }
 
 impl MonitorSelector {

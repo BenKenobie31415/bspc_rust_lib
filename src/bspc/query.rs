@@ -36,7 +36,7 @@ pub enum QueryCommand {
 }
 
 impl QueryCommand {
-    pub(crate) fn assemble(&self) -> Vec<String> {
+    fn assemble(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         result.push(String::from("query"));
         match self {
@@ -142,5 +142,41 @@ fn push_monitor_selector(curr_selector: &mut Vec<String>, monitor_sel: &Option<M
             }
         }
         None => {}
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bspc::{desktop::{modifier::DesktopModifier, selector::DesktopSelector}, monitor::{descriptor::MonitorDescriptor, selector::MonitorSelector}, node::{modifier::NodeModifier, selector::NodeSelector}, query::QueryCommand};
+
+    #[test]
+    fn all_windows() {
+        let cmd = QueryCommand::CNodes(Some(NodeSelector::new().add_modifier(NodeModifier::Window))).assemble();
+
+        assert_eq!(cmd, vec!["query", "--nodes", "--node", ".window"]);
+    }
+
+    #[test]
+    fn occupied_desktop_names() {
+        let cmd = QueryCommand::CDesktops(Some(DesktopSelector::new().add_modifier(DesktopModifier::Occupied)), true).assemble();
+
+        assert_eq!(cmd, vec!["query", "--desktops", "--desktop", ".occupied", "--names"]);
+    }
+
+    #[test]
+    fn focused_monitor_name() {
+        let cmd = QueryCommand::CMonitors(Some(MonitorSelector::new().set_descriptor(MonitorDescriptor::Focused)), true).assemble();
+
+        assert_eq!(cmd, vec!["query", "--monitors", "--monitor", "focused", "--names"]);
+    }
+
+    #[test]
+    fn primary_monitor_id_if_() {
+        let cmd = QueryCommand::Monitors(
+            Some(NodeSelector::new().add_modifier(NodeModifier::Window)),
+            None,
+            Some(MonitorSelector::new().set_descriptor(MonitorDescriptor::Primary)), false).assemble();
+
+        assert_eq!(cmd, vec!["query", "--monitors", "--node", ".window", "--monitor", "primary"]);
     }
 }
