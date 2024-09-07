@@ -93,16 +93,16 @@ impl QueryCommand {
     }
 
     /// Executes the command and returns the result of the query returned by bspc
-    pub fn get_response(&self) -> Option<Vec<String>> {
+    pub fn get_response(&self) -> Vec<String> {
         match socket_communication::send_message(self.assemble()) {
             Some(message) => {
                 if message.len() > 0 {
-                    return Some(message);
+                    return message;
                 }
-                return None;
-            },
-            None => None
+            }
+            None => {}
         }
+        return Vec::new();
     }
 }
 
