@@ -3,7 +3,7 @@ use std::io::prelude::*;
 
 pub(crate) fn send_message(command: Vec<String>) -> Option<Vec<String>> {
     let socket_path = get_bspc_socket_path();
-    println!("sending message: {:?}", command);
+    //println!("sending message: {:?}", command);
     let mut client = UnixStream::connect(socket_path).expect("Failed to connect to socket");
 
     let command_string = format!("{}\x00", command.join("\x00"));
