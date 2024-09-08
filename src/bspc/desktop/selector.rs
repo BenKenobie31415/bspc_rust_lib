@@ -1,3 +1,5 @@
+use crate::bspc::{descriptor::Descriptor, modifier::Modifier, selector::{Assembleable, Selector}};
+
 use super::{descriptor::DesktopDescriptor, modifier::DesktopModifier};
 
 pub struct DesktopSelector {
@@ -6,8 +8,11 @@ pub struct DesktopSelector {
     modifiers: Vec<DesktopModifier>
 }
 
-impl DesktopSelector {
-    pub fn new() -> DesktopSelector {
+impl Selector for DesktopSelector {
+    type Descriptor = DesktopDescriptor;
+    type Modifier = DesktopModifier;
+
+    fn new() -> DesktopSelector {
         DesktopSelector {
             reference_selector: None,
             descriptor: None,
@@ -15,20 +20,26 @@ impl DesktopSelector {
         }
     }
 
-    pub fn set_reference_selector(mut self, reference_selector: DesktopSelector) -> Self {
+    fn set_reference_selector(mut self, reference_selector: DesktopSelector) -> Self {
         self.reference_selector = Some(Box::new(reference_selector));
         return self;
     }
-    pub fn set_descriptor(mut self, descriptor: DesktopDescriptor) -> Self {
+    fn set_descriptor(mut self, descriptor: DesktopDescriptor) -> Self {
         self.descriptor = Some(descriptor);
         return self;
     }
-    pub fn add_modifier(mut self, modifier: DesktopModifier) -> Self {
+    fn add_modifier(mut self, modifier: DesktopModifier) -> Self {
         self.modifiers.push(modifier);
         return self;
     }
 
-    pub(crate) fn assemble(&self, default: Option<&DesktopDescriptor>) -> String {
+    fn get_query_prefix(&self) -> String {
+        "--desktop".to_string()
+    }
+}
+
+impl Assembleable for DesktopSelector {
+    fn assemble(&self, default: Option<&DesktopDescriptor>) -> String {
         let mut result: String = match &self.reference_selector {
             Some(reference_selector) => format!("{}#", reference_selector.assemble(None)),
             None => String::new()

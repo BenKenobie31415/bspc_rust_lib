@@ -1,4 +1,4 @@
-use crate::bspc::cycle_direction::CycleDir;
+use crate::bspc::{cycle_direction::CycleDir, descriptor::Descriptor};
 
 pub enum MonitorDescriptor {
     CycleDir(CycleDir),
@@ -15,8 +15,8 @@ pub enum MonitorDescriptor {
     Name(String)
 }
 
-impl MonitorDescriptor {
-    pub fn get_string(&self) -> String {
+impl Descriptor for MonitorDescriptor {
+    fn get_string(&self) -> String {
         match self {
             MonitorDescriptor::CycleDir(cycle_dir) => cycle_dir.get_string(),
             MonitorDescriptor::Any => "any".to_string(),

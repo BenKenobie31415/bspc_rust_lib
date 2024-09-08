@@ -1,7 +1,7 @@
 use serde_json::Value;
 
 use crate::bspc::{
-    desktop::{descriptor::DesktopDescriptor, modifier::DesktopModifier, selector::DesktopSelector}, node::{descriptor::NodeDescriptor, modifier::NodeModifier, selector::NodeSelector}, query::QueryCommand
+    desktop::{descriptor::DesktopDescriptor, modifier::DesktopModifier, selector::DesktopSelector}, node::{descriptor::NodeDescriptor, modifier::NodeModifier, selector::NodeSelector}, query::QueryCommand, selector::Selector
 };
 
 /// Gets the window class name for a given node id.

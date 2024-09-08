@@ -1,3 +1,5 @@
+use crate::bspc::descriptor::Descriptor;
+
 pub enum DesktopDescriptor {
     Any,
     Last,
@@ -10,8 +12,8 @@ pub enum DesktopDescriptor {
     Name(String)
 }
 
-impl DesktopDescriptor {
-    pub fn get_string(&self) -> String {
+impl Descriptor for DesktopDescriptor {
+    fn get_string(&self) -> String {
         String::from(match self {
             DesktopDescriptor::Any => "any",
             DesktopDescriptor::Last => "last",

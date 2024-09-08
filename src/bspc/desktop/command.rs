@@ -1,4 +1,4 @@
-use crate::{bspc::{cycle_direction::CycleDir, monitor::selector::MonitorSelector}, socket_communication};
+use crate::{bspc::{cycle_direction::CycleDir, monitor::selector::MonitorSelector, selector::{Assembleable, Selector}}, socket_communication};
 
 use super::{descriptor::DesktopDescriptor, layout::Layout, selector::DesktopSelector};
 
@@ -115,7 +115,7 @@ impl DesktopCommand {
 
 #[cfg(test)]
 mod tests {
-    use crate::bspc::{cycle_direction::CycleDir, desktop::{command::DesktopCommand, descriptor::DesktopDescriptor, selector::DesktopSelector}};
+    use crate::bspc::{cycle_direction::CycleDir, desktop::{command::DesktopCommand, descriptor::DesktopDescriptor, selector::DesktopSelector}, selector::Selector};
 
 
     #[test]

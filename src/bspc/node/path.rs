@@ -1,4 +1,4 @@
-use crate::bspc::desktop::selector::DesktopSelector;
+use crate::bspc::{desktop::selector::DesktopSelector, selector::{Assembleable, Selector}};
 
 use super::direction::Direction;
 

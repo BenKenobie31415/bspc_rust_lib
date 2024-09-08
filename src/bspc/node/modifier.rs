@@ -1,5 +1,9 @@
+use crate::bspc::modifier::Modifier;
+
 pub enum NodeModifier {
     Id(String),
+
+    //TODO same_class and others see bspc man pages
 
     Focused,
     NotFocused,
@@ -49,8 +53,8 @@ pub enum NodeModifier {
     NotVertical
 }
 
-impl NodeModifier {
-    pub fn get_string(&self) -> String {
+impl Modifier for NodeModifier {
+    fn get_string(&self) -> String {
         String::from(match self {
             NodeModifier::Id(id) => id,
 

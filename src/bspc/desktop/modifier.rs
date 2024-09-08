@@ -1,3 +1,5 @@
+use crate::bspc::modifier::Modifier;
+
 pub enum DesktopModifier {
     Focused,
     NotFocused,
@@ -11,8 +13,8 @@ pub enum DesktopModifier {
     NotLocal
 }
 
-impl DesktopModifier {
-    pub fn get_string(&self) -> String {
+impl Modifier for DesktopModifier {
+    fn get_string(&self) -> String {
         String::from(match self {
             DesktopModifier::Focused => ".focused",
             DesktopModifier::NotFocused => ".!focused",

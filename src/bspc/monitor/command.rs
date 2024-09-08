@@ -1,4 +1,4 @@
-use crate::socket_communication;
+use crate::{bspc::selector::{Assembleable, Selector}, socket_communication};
 
 use super::{descriptor::MonitorDescriptor, selector::MonitorSelector};
 
@@ -90,7 +90,7 @@ impl MonitorCommand {
 
 #[cfg(test)]
 mod tests {
-    use crate::bspc::monitor::{command::MonitorCommand, descriptor::MonitorDescriptor, selector::MonitorSelector};
+    use crate::bspc::{monitor::{command::MonitorCommand, descriptor::MonitorDescriptor, selector::MonitorSelector}, selector::Selector};
 
     #[test]
     fn remove() {

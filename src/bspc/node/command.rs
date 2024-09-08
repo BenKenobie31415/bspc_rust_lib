@@ -1,4 +1,4 @@
-use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selector::MonitorSelector}, socket_communication};
+use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selector::MonitorSelector, selector::{Assembleable, Selector}}, socket_communication};
 
 use super::{descriptor::NodeDescriptor, direction::Direction, flag::NodeFlag, layer::NodeLayer, resize_pos::ResizePos, selector::NodeSelector, state::NodeState};
 
@@ -213,7 +213,7 @@ impl NodeCommand {
 
 #[cfg(test)]
 mod tests {
-    use crate::bspc::{desktop::{descriptor::DesktopDescriptor, selector::DesktopSelector}, node::{command::NodeCommand, descriptor::NodeDescriptor, selector::NodeSelector}};
+    use crate::bspc::{desktop::{descriptor::DesktopDescriptor, selector::DesktopSelector}, node::{command::NodeCommand, descriptor::NodeDescriptor, selector::NodeSelector}, selector::Selector};
 
     #[test]
     fn focus_older() {

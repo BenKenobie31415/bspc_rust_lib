@@ -1,4 +1,4 @@
-use crate::bspc::node::path::Path;
+use crate::bspc::{descriptor::Descriptor, node::path::Path};
 
 use super::direction::Direction;
 pub enum NodeDescriptor {
@@ -17,8 +17,8 @@ pub enum NodeDescriptor {
     Id(String),
 }
 
-impl NodeDescriptor {
-    pub fn get_string(&self) -> String {
+impl Descriptor for NodeDescriptor {
+    fn get_string(&self) -> String {
         match self {
             NodeDescriptor::Dir(direction) => direction.get_string(),
             NodeDescriptor::Path(path) => path.assemble(),

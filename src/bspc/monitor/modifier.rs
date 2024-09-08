@@ -1,3 +1,5 @@
+use crate::bspc::modifier::Modifier;
+
 pub enum MonitorModifier {
     Focused,
     NotFocused,
@@ -5,8 +7,8 @@ pub enum MonitorModifier {
     NotOccupied
 }
 
-impl MonitorModifier {
-    pub fn get_string(&self) -> String {
+impl Modifier for MonitorModifier {
+    fn get_string(&self) -> String {
         String::from(match self {
             MonitorModifier::Focused => ".focused",
             MonitorModifier::NotFocused => ".!focused",
