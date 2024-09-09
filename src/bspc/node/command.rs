@@ -1,6 +1,6 @@
-use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selector::MonitorSelector, selector::{Assembleable, Selector}}, socket_communication};
+use crate::{bspc::{desktop::selector::DesktopSelector, monitor::selector::MonitorSelector, selector::Assembleable}, socket_communication};
 
-use super::{descriptor::NodeDescriptor, direction::Direction, flag::NodeFlag, layer::NodeLayer, resize_pos::ResizePos, selector::NodeSelector, state::NodeState};
+use super::{circulation_direction::CircDirection, descriptor::NodeDescriptor, direction::Direction, flag::NodeFlag, layer::NodeLayer, resize_pos::ResizePos, selector::NodeSelector, split_type::SplitType, state::NodeState};
 
 static DEFAULT_DESCRIPTOR: Option<&NodeDescriptor> = Some(&NodeDescriptor::Focused);
 
@@ -37,12 +37,16 @@ pub enum NodeCommand {
     /// - `node_sel_a`: One of the nodes to swap
     /// - `node_sel_b`: The other of the nodes to swap
     Swap(NodeSelector, NodeSelector),
-    //TODO cancel
     /// Starts preselection in the selected node in the given direction.
-    /// #Arguments
+    /// # Arguments
     /// - `node_sel`: The node to split
     /// - `direction`: The direction to preselect in
-    PreselectDirection(NodeSelector, Direction),
+    /// - `toggle`: Wether to cancel preselection if the current preselection direction is chosen again
+    PreselectDirection(NodeSelector, Direction, bool),
+    /// Cancels preselection in the selected node.
+    /// # Arguments
+    /// - `node_sel`: The node to cancel preselection for
+    PreselectCancel(NodeSelector),
     /// Moves the selected node by the given amount and direction.
     /// # Arguments
     /// - `node_sel`: The node to move
@@ -61,8 +65,16 @@ pub enum NodeCommand {
     /// - `node_sel`: The node to set the splitting ratio for.
     /// - `ratio`: New splitting ratio (0,1)
     Ratio(NodeSelector, f64),
-    // TODO rotate
-    // TODO flip
+    /// Rotates the tree rooted at the selected node by the given amount.
+    /// # Arguments
+    /// - `node_sel`: The node that is the root of the tree to rotate
+    /// - `angle`: The angle to rotate the tree by (value in [0, 90, 180, 270] that is closest to given angle is used)
+    Rotate(NodeSelector, i32),
+    /// Flips the tree rooted at the selected node.
+    /// # Arguments
+    /// - `node_sel`: The node that is the root of the tree to flip
+    /// - `flip_axis`: The axis to flip the tree on
+    Flip(NodeSelector, SplitType),
     /// Resets the splitting ratios of the tree rooted at the selected node.
     /// # Arguments
     /// - `node_sel`: The node that is the root of the tree to equalize
@@ -71,7 +83,11 @@ pub enum NodeCommand {
     /// # Arguments
     /// - `node_sel`: The node that is the root of the tree to balance
     Balance(NodeSelector),
-    // TODO circulate
+    /// Circulates the windows of the tree rooted at the selected node.
+    /// # Arguments
+    /// - `node_sel`: The node that is the root of the tree to rotate
+    /// - `circ_dir`: The direction in which to circulate
+    Circulate(NodeSelector, CircDirection),
     /// Sets the state of the selected node.
     /// # Arguments
     /// - `node_sel`: The node to set the state for
@@ -145,10 +161,19 @@ impl NodeCommand {
                 result.push(String::from("--swap"));
                 result.push(node_sel2.assemble(None));
             }
-            NodeCommand::PreselectDirection(node_sel, direction) => {
+            NodeCommand::PreselectDirection(node_sel, direction, toggle) => {
                 result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--presel-dir"));
-                result.push(direction.get_string());
+                let prefix = match toggle {
+                    true => "~",
+                    false => "",
+                };
+                result.push(format!("{}{}", prefix, direction.get_string()));
+            }
+            NodeCommand::PreselectCancel(node_sel) => {
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
+                result.push(String::from("--presel-dir"));
+                result.push(String::from("cancel"));
             }
             NodeCommand::Move(node_sel, x, y) => {
                 result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
@@ -168,6 +193,24 @@ impl NodeCommand {
                 result.push(String::from("--ratio"));
                 result.push(ratio.to_string());
             }
+            NodeCommand::Rotate(node_sel, angle) => {
+                let rot_angle = match angle.rem_euclid(360) {
+                    0..=44 => 0,
+                    45..=134 => 90,
+                    135..=224 => 180,
+                    225..=314 => 270,
+                    315..=360 => 0,
+                    _ => -1,
+                };
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
+                result.push(String::from("--rotate"));
+                result.push(rot_angle.to_string());
+            }
+            NodeCommand::Flip(node_sel, axis) => {
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
+                result.push(String::from("--flip"));
+                result.push(axis.get_string());
+            }
             NodeCommand::Equalize(node_sel) => {
                 result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--equalize"));
@@ -175,6 +218,11 @@ impl NodeCommand {
             NodeCommand::Balance(node_sel) => {
                 result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
                 result.push(String::from("--balance"));
+            }
+            NodeCommand::Circulate(node_sel, circ_dir) => {
+                result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
+                result.push(String::from("--circulate"));
+                result.push(circ_dir.get_string());
             }
             NodeCommand::State(node_sel, state, toggle) => {
                 result.push(node_sel.assemble(DEFAULT_DESCRIPTOR));
@@ -244,5 +292,12 @@ mod tests {
         let cmd = NodeCommand::Ratio(NodeSelector::new(), 0.1).assemble();
         
         assert_eq!(cmd, vec!["node", "focused", "--ratio", "0.1"]);
+    }
+    
+    #[test]
+    fn rotation() {
+        let cmd = NodeCommand::Rotate(NodeSelector::new(), -134).assemble();
+
+        assert_eq!(cmd, vec!["node", "focused", "--rotate", "270"]);
     }
 }

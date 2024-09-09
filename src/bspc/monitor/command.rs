@@ -1,4 +1,4 @@
-use crate::{bspc::selector::{Assembleable, Selector}, socket_communication};
+use crate::{bspc::selector::Assembleable, socket_communication};
 
 use super::{descriptor::MonitorDescriptor, selector::MonitorSelector};
 

@@ -3,8 +3,6 @@ use crate::bspc::modifier::Modifier;
 pub enum NodeModifier {
     Id(String),
 
-    //TODO same_class and others see bspc man pages
-
     Focused,
     NotFocused,
     Active,
@@ -26,6 +24,13 @@ pub enum NodeModifier {
     NotFloating,
     Fullscreen,
     NotFullscreen,
+
+    SameClass,
+    NotSameClass,
+    DescendantOf,
+    NotDescendantOf,
+    AncestorOf,
+    NotAncestorOf,
 
     Hidden,
     NotHidden,
@@ -79,6 +84,13 @@ impl Modifier for NodeModifier {
             NodeModifier::NotFloating => ".!floating",
             NodeModifier::Fullscreen => ".fullscreen",
             NodeModifier::NotFullscreen => ".!fullscreen",
+
+            NodeModifier::SameClass => ".same_class",
+            NodeModifier::NotSameClass => ".!same_class",
+            NodeModifier::DescendantOf => ".decendant_of",
+            NodeModifier::NotDescendantOf => ".!decendant_of",
+            NodeModifier::AncestorOf => ".ancestor_of",
+            NodeModifier::NotAncestorOf => ".!ancestor_of",
 
             NodeModifier::Hidden => ".hidden",
             NodeModifier::NotHidden => ".!hidden",

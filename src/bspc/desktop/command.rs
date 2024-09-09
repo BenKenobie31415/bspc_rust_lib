@@ -1,4 +1,4 @@
-use crate::{bspc::{cycle_direction::CycleDir, monitor::selector::MonitorSelector, selector::{Assembleable, Selector}}, socket_communication};
+use crate::{bspc::{cycle_direction::CycleDir, monitor::selector::MonitorSelector, selector::Assembleable}, socket_communication};
 
 use super::{descriptor::DesktopDescriptor, layout::Layout, selector::DesktopSelector};
 
