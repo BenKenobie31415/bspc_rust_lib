@@ -4,7 +4,7 @@ use crate::bspc::{
     desktop::{descriptor::DesktopDescriptor, modifier::DesktopModifier, selector::DesktopSelector}, node::{descriptor::NodeDescriptor, modifier::NodeModifier, selector::NodeSelector}, query::QueryCommand, selector::Selector
 };
 
-/// Gets the window class name for a given node id.
+/// Returns x-class name
 pub fn get_class_name_from_id(node_id: &str) -> String {
     let json_tree = QueryCommand::Tree(
         Some(NodeSelector::new().set_descriptor(NodeDescriptor::Id(node_id.to_string()))),
@@ -21,7 +21,7 @@ pub fn get_class_name_from_id(node_id: &str) -> String {
     "".to_string()
 }
 
-/// Gets the node id of the node that was last focused on the given desktop.
+/// Returns id of last focused node of desktop
 pub fn get_last_focused_on_desktop(desktop_id: &str) -> Option<String> {
     let ref_sel = NodeSelector::new().set_descriptor(NodeDescriptor::Focused);
     let nodes = QueryCommand::Nodes(
@@ -34,17 +34,17 @@ pub fn get_last_focused_on_desktop(desktop_id: &str) -> Option<String> {
     }
 }
 
-/// Queries the ids of every desktop.
+/// Returns ids of all desktops
 pub fn get_all_desktops() -> Vec<String> {
     return QueryCommand::Desktops(None, None, None, false).get_response();
 }
 
-/// Queries the names of every desktop.
+/// Returns names of all desktops
 pub fn get_all_desktop_names() -> Vec<String> {
     return QueryCommand::Desktops(None, None, None, true).get_response();
 }
 
-/// Queries the currently focused node.
+/// Returns id of focused node
 pub fn get_focused_node() -> Option<String> {
     let nodes = QueryCommand::Nodes(
         Some(NodeSelector::new().add_modifier(NodeModifier::Focused)),
@@ -57,7 +57,7 @@ pub fn get_focused_node() -> Option<String> {
     }
 }
 
-/// Gets all node classes for a given list of node ids.
+/// Returns list of all names for the given ids in the same order
 pub fn get_node_classes_from_id_list(nodes: &Vec<String>) -> Vec<String> {
     let mut result = Vec::new();
     for id in nodes {
@@ -66,7 +66,7 @@ pub fn get_node_classes_from_id_list(nodes: &Vec<String>) -> Vec<String> {
     return result;
 }
 
-/// Queries all windows for a given desktop id.
+/// Returns ids of all windows on desktop
 pub fn get_windows(desktop_id: String) -> Vec<String> {
     return QueryCommand::Nodes(
         Some(NodeSelector::new().add_modifier(NodeModifier::Window)),
@@ -74,7 +74,7 @@ pub fn get_windows(desktop_id: String) -> Vec<String> {
         None).get_response();
 }
 
-/// Queries all empty desktops
+/// Returns ids of all empty desktops
 pub fn get_empty_desktops() -> Vec<String> {
     return QueryCommand::Desktops(
         None,
@@ -82,7 +82,7 @@ pub fn get_empty_desktops() -> Vec<String> {
         None, false).get_response();
 }
 
-/// Gets the name of a desktop for a given id.
+/// Returns name of desktop
 pub fn get_desktop_name(desktop_id: String) -> String {
     let desktops = QueryCommand::Desktops(
         None,
@@ -95,7 +95,7 @@ pub fn get_desktop_name(desktop_id: String) -> String {
     }
 }
 
-/// Gets the id of the focused desktop.
+/// Returns id of focused desktop
 pub fn get_focused_desktop() -> Option<String> {
     let desktops = QueryCommand::Desktops(
         None,

@@ -92,7 +92,7 @@ impl QueryCommand {
         result
     }
 
-    /// Executes the command and returns the result of the query returned by bspc
+    /// Sends the command and returns the answer of bspwm
     pub fn get_response(&self) -> Vec<String> {
         match socket_communication::send_message(self.assemble()) {
             Some(message) => {

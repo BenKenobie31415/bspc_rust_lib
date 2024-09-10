@@ -2,8 +2,6 @@ use std::os::unix::net::UnixStream;
 use std::io::prelude::*;
 
 pub(crate) fn send_message(command: Vec<String>) -> Option<Vec<String>> {
-    //println!("sending message: {:?}", command);
-
     let command_string = assemble_message(command);
 
     let mut client = get_client();
@@ -37,7 +35,7 @@ pub(crate) fn get_client() -> UnixStream {
 }
 
 fn get_bspwm_socket_path() -> String {
-    let socket_path = String::from("/tmp/bspwm_0_0-socket");
+    let default_socket_path = String::from("/tmp/bspwm_0_0-socket");
     match std::env::var("BSPWM_SOCKET") {
         Ok(path) => {
             if path != "" {
@@ -46,5 +44,5 @@ fn get_bspwm_socket_path() -> String {
         }
         Err(_) => {}
     }
-    socket_path
+    default_socket_path
 }

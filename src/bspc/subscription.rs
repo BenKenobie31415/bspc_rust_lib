@@ -11,18 +11,18 @@ pub struct SubscriptionHandler {
 }
 
 impl SubscriptionHandler {
-    /// Returns a new SubscriptionHandler
     pub fn new() -> SubscriptionHandler {
         SubscriptionHandler {
             thread_handles: Vec::new(),
         }
     }
 
+    /// `callback` gets called each time the event occurs with the payload of the event and the `callback_args`. After `count` times, `callback` does not get called anymore. 'count' <= 0 is equivalent of infinite count.
     pub fn subscribe<T:Send + 'static>(&mut self, event: Event, callback: fn(Vec<&str>, &T), callback_args: T, count: i32) {
         self.thread_handles.push(add_subscriber(event, callback, callback_args, count));
     }
 
-    /// Blocks and manages the subscriptions
+    /// Blocks and calls callback of subscriptions.
     pub fn await_threads(self) {
         for handle in self.thread_handles {
             handle.join().unwrap();
