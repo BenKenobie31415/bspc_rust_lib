@@ -30,6 +30,12 @@ impl SubscriptionHandler {
     }
 }
 
+/// Adds the given event to the list of events that the `SubscriptionHandler` listnes for.
+/// # Arguments
+/// - `event`: The `Event` to listen for
+/// - `callback`: The function to execute when the event happens
+/// - `callback_args`: Additional arguments passed to the `callback`
+/// - `count`: For how many events the callback should be triggered (`count` <= 0 => infinite)
 fn add_subscriber<T:Send + 'static>(event: Event, callback: fn(Vec<&str>, &T), callback_args: T, count: i32) -> JoinHandle<()> {
     thread::spawn(move || {
         let mut client = get_client();

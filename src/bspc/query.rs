@@ -42,9 +42,9 @@ impl QueryCommand {
         match self {
             QueryCommand::Nodes(node_sel, desktop_sel, monitor_sel) => {
                 result.push(String::from("--nodes"));
-                push_selector_optional(&mut result, node_sel);
-                push_selector_optional(&mut result, desktop_sel);
-                push_selector_optional(&mut result, monitor_sel);
+                push_optional_selector(&mut result, monitor_sel);
+                push_optional_selector(&mut result, desktop_sel);
+                push_optional_selector(&mut result, node_sel);
             }
             QueryCommand::CNodes(node_sel) => {
                 result.push(String::from("--nodes"));
@@ -52,9 +52,9 @@ impl QueryCommand {
             }
             QueryCommand::Desktops(node_sel, desktop_sel, monitor_sel, names) => {
                 result.push(String::from("--desktops"));
-                push_selector_optional(&mut result, node_sel);
-                push_selector_optional(&mut result, desktop_sel);
-                push_selector_optional(&mut result, monitor_sel);
+                push_optional_selector(&mut result, monitor_sel);
+                push_optional_selector(&mut result, desktop_sel);
+                push_optional_selector(&mut result, node_sel);
                 if *names {
                     result.push(String::from("--names"));
                 }
@@ -68,9 +68,9 @@ impl QueryCommand {
             }
             QueryCommand::Monitors(node_sel, desktop_sel, monitor_sel, names) => {
                 result.push(String::from("--monitors"));
-                push_selector_optional(&mut result, node_sel);
-                push_selector_optional(&mut result, desktop_sel);
-                push_selector_optional(&mut result, monitor_sel);
+                push_optional_selector(&mut result, monitor_sel);
+                push_optional_selector(&mut result, desktop_sel);
+                push_optional_selector(&mut result, node_sel);
                 if *names {
                     result.push(String::from("--names"));
                 }
@@ -84,9 +84,9 @@ impl QueryCommand {
             }
             QueryCommand::Tree(node_sel, desktop_sel, monitor_sel) => {
                 result.push(String::from("--tree"));
-                push_selector_optional(&mut result, node_sel);
-                push_selector_optional(&mut result, desktop_sel);
-                push_selector_optional(&mut result, monitor_sel);
+                push_optional_selector(&mut result, desktop_sel);
+                push_optional_selector(&mut result, monitor_sel);
+                push_optional_selector(&mut result, node_sel);
             }
         }
         result
@@ -113,7 +113,7 @@ fn push_selector<T: Selector + Assembleable>(current_sel: &mut Vec<String>, sel:
         current_sel.push(assembled_selector);
     }
 }
-fn push_selector_optional<T: Selector + Assembleable>(current_sel: &mut Vec<String>, sel: &Option<T>) {
+fn push_optional_selector<T: Selector + Assembleable>(current_sel: &mut Vec<String>, sel: &Option<T>) {
     match sel {
         Some(selector) => {
             push_selector(current_sel, selector);
