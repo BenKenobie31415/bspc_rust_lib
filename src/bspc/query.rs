@@ -154,6 +154,6 @@ mod tests {
             None,
             Some(MonitorSelector::new().set_descriptor(MonitorDescriptor::Primary)), false).assemble();
 
-        assert_eq!(cmd, vec!["query", "--monitors", "--node", ".window", "--monitor", "primary"]);
+        assert_eq!(cmd, vec!["query", "--monitors", "--monitor", "primary", "--node", ".window"]);
     }
 }

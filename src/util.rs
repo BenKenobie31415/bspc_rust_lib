@@ -3,7 +3,7 @@ use core::panic;
 use serde_json::Value;
 
 use crate::bspc::{
-    desktop::{command::DesktopCommand, descriptor::DesktopDescriptor, modifier::DesktopModifier, selector::DesktopSelector}, node::{command::NodeCommand, descriptor::NodeDescriptor, modifier::NodeModifier, selector::NodeSelector}, query::QueryCommand, selector::Selector
+    desktop::{descriptor::DesktopDescriptor, modifier::DesktopModifier, selector::DesktopSelector}, node::{command::NodeCommand, descriptor::NodeDescriptor, modifier::NodeModifier, selector::NodeSelector}, query::QueryCommand, selector::Selector
 };
 
 
